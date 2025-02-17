@@ -1,0 +1,40 @@
+###
+GET http://localhost:5000/users
+###
+POST http://localhost:5000/users
+Content-Type: application/json
+
+{
+  "name": "Ahmad Syahrul Rosyid",
+  "email": "syahrul@gmail.com",
+  "password": "44332211",
+  "confPassword": "44332211",
+  "role": "user"
+}
+###
+GET http://localhost:5000/users/eece6918-dc64-4c26-9875-5ec2fe3fdc8c
+###
+patch http://localhost:5000/users/60eba823-5066-4e05-b1bd-84e63d9499c9
+Content-Type: application/json
+
+{
+  "name": "Muhammad Habib",
+  "email": "madani@gmail.com",
+  "password": "88881111",
+  "confPassword": "88881111",
+  "role": "user"
+}
+###
+DELETE  http://localhost:5000/users/4aa0e4d9-1ccd-4322-9071-176c71d33f08
+###
+
+POST http://localhost:5000/login
+Content-Type: application/json
+
+{
+  "email": "syahrul@gmail.com",
+  "password": "44332211",
+}
+
+###
+GET http://localhost:5000/me

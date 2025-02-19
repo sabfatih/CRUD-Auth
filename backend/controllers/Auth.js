@@ -2,15 +2,17 @@ import Users from "../models/UserModel.js";
 import argon2 from "argon2";
 
 export const logIn = async (req, res) => {
-  console.log(req.body);
-  console.log("tess1");
+  // console.log(req.body);
 
   const user = await Users.findOne({
     where: {
       email: req.body.email,
     },
   });
-  console.log("tess2");
+
+  const rehashedPassword = await argon2.hash(req.body.password);
+  console.log(rehashedPassword);
+  console.log(user.password);
 
   if (!user) return res.status(404).json({ msg: "User not found" });
 

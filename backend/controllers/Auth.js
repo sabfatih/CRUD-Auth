@@ -11,10 +11,6 @@ export const logIn = async (req, res) => {
     },
   });
 
-  const rehashedPassword = await argon2.hash(req.body.password);
-  console.log(rehashedPassword);
-  console.log(user.password);
-
   if (!user) return res.status(404).json({ msg: "User not found" });
 
   const match = await argon2.verify(user.password, req.body.password);

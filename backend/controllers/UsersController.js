@@ -41,6 +41,10 @@ const createUser = async (req, res) => {
 
   if (password !== confPassword)
     return res.status(400).json({ msg: "Password doesn't match" });
+  if (password.length < 8)
+    return res
+      .status(400)
+      .json({ msg: "Password must be at least 8 character" });
 
   const hashPassword = await argon2.hash(password);
 

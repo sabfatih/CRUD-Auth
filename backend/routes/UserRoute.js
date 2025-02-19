@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.get("/users", verifyUser, adminOnly, getUsers);
 router.get("/users/:id", verifyUser, adminOnly, getUserById);
-router.post("/users", verifyUser, createUser);
+router.post("/users", createUser);
 router.patch("/users/:id", verifyUser, updateUser);
 router.delete("/users/:id", verifyUser, deleteUser);
 

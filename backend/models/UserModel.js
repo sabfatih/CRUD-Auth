@@ -34,6 +34,7 @@ const User = db.define(
       allowNull: false,
       validate: {
         notEmpty: true,
+        len: [8, 100],
       },
     },
     role: {

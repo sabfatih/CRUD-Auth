@@ -11,6 +11,9 @@ importers:
       argon2:
         specifier: ^0.41.1
         version: 0.41.1
+      connect-session-sequelize:
+        specifier: ^7.1.7
+        version: 7.1.7(sequelize@6.37.5(mysql2@3.12.0))
       cors:
         specifier: ^2.8.5
         version: 2.8.5
@@ -78,6 +81,12 @@ packages:
   call-bound@1.0.3:
     resolution: {integrity: sha512-YTd+6wGlNlPxSuri7Y6X8tY2dmm12UMH66RpKMhiX6rsk5wXXnYgbUcOt8kiS31/AjfoTOvCsE+w8nZQLQnzHA==}
     engines: {node: '>= 0.4'}
+
+  connect-session-sequelize@7.1.7:
+    resolution: {integrity: sha512-Wqq7rg0w+9bOVs6jC0nhZnssXJ3+iKNlDVWn2JfBuBPoY7oYaxzxfBKeUYrX6dHt3OWEWbZV6LJvapwi76iBQQ==}
+    engines: {node: '>= 10'}
+    peerDependencies:
+      sequelize: '>= 6.1.0'
 
   content-disposition@0.5.4:
     resolution: {integrity: sha512-FveZTNuGw04cxlAiWbzi6zTAL/lhehaWbTtgluJh4/E95DqMwTmha3KZN1aAWA8cFIhHzMZUvLevkw5Rqk+tSQ==}
@@ -556,6 +565,13 @@ snapshots:
     dependencies:
       call-bind-apply-helpers: 1.0.2
       get-intrinsic: 1.2.7
+
+  connect-session-sequelize@7.1.7(sequelize@6.37.5(mysql2@3.12.0)):
+    dependencies:
+      debug: 4.4.0
+      sequelize: 6.37.5(mysql2@3.12.0)
+    transitivePeerDependencies:
+      - supports-color
 
   content-disposition@0.5.4:
     dependencies:

@@ -1,11 +1,21 @@
-import Users from "../models/UserModel.js";
+import User from "../models/UserModel.js";
 import argon2 from "argon2";
 
 const getUsers = async (req, res) => {
   try {
-    const response = await Users.findAll({
-      attributes: ["uuid", "name", "email", "role"],
-    });
+    let response;
+    if (req.role === "admin") {
+      response = await User.findAll({
+        attributes: ["uuid", "name", "email", "role"],
+      });
+    } else {
+      response = await User.findAll({
+        attributes: ["uuid", "name", "email", "role"],
+        where: {
+          id: req.userId,
+        },
+      });
+    }
     res.status(200).json(response);
   } catch (e) {
     res.status(500).json({ msg: e.message });
@@ -14,7 +24,7 @@ const getUsers = async (req, res) => {
 
 const getUserById = async (req, res) => {
   try {
-    const response = await Users.findOne({
+    const response = await User.findOne({
       where: {
         uuid: req.params.id,
       },
@@ -35,7 +45,7 @@ const createUser = async (req, res) => {
   const hashPassword = await argon2.hash(password);
 
   try {
-    await Users.create({
+    await User.create({
       name,
       email,
       password: hashPassword,
@@ -48,7 +58,7 @@ const createUser = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  const user = await Users.findOne({
+  const user = await User.findOne({
     where: {
       uuid: req.params.id,
     },
@@ -64,7 +74,7 @@ const updateUser = async (req, res) => {
     return res.status(400).json({ msg: "Password doesn't match" });
 
   try {
-    await Users.update(
+    await User.update(
       {
         name,
         email,
@@ -83,7 +93,7 @@ const updateUser = async (req, res) => {
   }
 };
 const deleteUser = async (req, res) => {
-  const user = await Users.findOne({
+  const user = await User.findOne({
     where: {
       uuid: req.params.id,
     },
@@ -91,7 +101,7 @@ const deleteUser = async (req, res) => {
   if (!user) return res.status(404).json({ msg: "User not found" });
 
   try {
-    await Users.destroy({
+    await User.destroy({
       where: {
         uuid: req.params.id,
       },

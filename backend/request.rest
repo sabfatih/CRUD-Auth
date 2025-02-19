@@ -5,10 +5,10 @@ POST http://localhost:5000/users
 Content-Type: application/json
 
 {
-  "name": "Ahmad Syahrul Rosyid",
-  "email": "syahrul@gmail.com",
-  "password": "44332211",
-  "confPassword": "44332211",
+  "name": "Raihannur",
+  "email": "rehanur@gmail.com",
+  "password": "adine123fawas",
+  "confPassword": "adine123fawas",
   "role": "user"
 }
 ###
@@ -26,15 +26,38 @@ Content-Type: application/json
 }
 ###
 DELETE  http://localhost:5000/users/4aa0e4d9-1ccd-4322-9071-176c71d33f08
-###
 
+
+###
+# user
 POST http://localhost:5000/login
 Content-Type: application/json
 
 {
-  "email": "syahrul@gmail.com",
-  "password": "44332211",
+  "email": "rehanur@gmail.com",
+  "password": "adine123fawas"
+}
+
+###
+# admin
+POST http://localhost:5000/login
+Content-Type: application/json
+
+{
+  "email": "admin@gmail.com",
+  "password": "12345678"
 }
 
 ###
 GET http://localhost:5000/me
+###
+DELETE  http://localhost:5000/logout
+
+###
+GET http://localhost:5000/products
+
+###
+GET http://localhost:5000/products/6452c56f-6c88-433f-97a0-87d2b6e381bc
+
+###
+DELETE http://localhost:5000/products/6452c56f-6c88-433f-97a0-87d2b6e381bc

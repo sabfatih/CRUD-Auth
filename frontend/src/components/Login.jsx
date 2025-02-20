@@ -1,10 +1,47 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser, reset } from "../features/authSlice.js";
 
 const Login = () => {
   const [warning, setWarning] = useState("");
   const [required, setRequired] = useState([false, false]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user, isError, isLoading, isSuccess } = useSelector(
+    (state) => state.auth
+  );
+
+  const auth = async (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+
+    if (!email || !password) {
+      if (!email) {
+        setRequired((prev) => [true, prev[1]]);
+      }
+      if (!password) {
+        setRequired((prev) => [prev[0], true]);
+      }
+      return false;
+    }
+
+    dispatch(loginUser({ email, password }));
+
+    try {
+      const foundUser = await axios.post("http://localhost:5000/login", {
+        email,
+        password,
+      });
+      setWarning("");
+      console.log(foundUser);
+    } catch (e) {
+      console.log(e);
+      setWarning(e.response.data.msg);
+    }
+  };
 
   return (
     <section className="hero has-background-grey-light is-fullheight is-fullwidth">
@@ -12,38 +49,7 @@ const Login = () => {
         <div className="container">
           <div className="columns is-centered">
             <div className="column is-4">
-              <form
-                className="box"
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  const email = e.target.email.value;
-                  const password = e.target.password.value;
-                  if (!email || !password) {
-                    if (!email) {
-                      setRequired((prev) => [true, prev[1]]);
-                    }
-                    if (!password) {
-                      setRequired((prev) => [prev[0], true]);
-                    }
-                    return false;
-                  }
-
-                  try {
-                    const foundUser = await axios.post(
-                      "http://localhost:5000/login",
-                      {
-                        email,
-                        password,
-                      }
-                    );
-                    setWarning("");
-                    console.log(foundUser);
-                  } catch (e) {
-                    console.log(e);
-                    setWarning(e.response.data.msg);
-                  }
-                }}
-              >
+              <form className="box" onSubmit={(e) => auth(e)}>
                 <h1 className="title is-2">Sign in</h1>
                 <div className="field">
                   <label className="label">Email</label>

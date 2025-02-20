@@ -41,6 +41,10 @@ export const Me = async (req, res) => {
 };
 
 export const logOut = (req, res) => {
+  if (!req.session.userId)
+    return res
+      .status(401)
+      .json({ msg: "Can't logout, You haven't login to your account yet" });
   req.session.destroy((e) => {
     if (e) return res.status(400).json({ msg: "Can't logout" });
 

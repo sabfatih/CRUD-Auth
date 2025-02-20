@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
 const Login = () => {
   const [warning, setWarning] = useState("");
+  const [required, setRequired] = useState([false, false]);
 
   return (
     <section className="hero has-background-grey-light is-fullheight is-fullwidth">
@@ -16,7 +18,15 @@ const Login = () => {
                   e.preventDefault();
                   const email = e.target.email.value;
                   const password = e.target.password.value;
-                  if (!email || !password) return false;
+                  if (!email || !password) {
+                    if (!email) {
+                      setRequired((prev) => [true, prev[1]]);
+                    }
+                    if (!password) {
+                      setRequired((prev) => [prev[0], true]);
+                    }
+                    return false;
+                  }
 
                   try {
                     const foundUser = await axios.post(
@@ -40,10 +50,13 @@ const Login = () => {
                   <div className="control">
                     <input
                       type="text"
-                      className="input"
+                      className={`input ${
+                        required[0] ? "is-danger is-outlined" : ""
+                      }`}
                       placeholder="email"
                       name="email"
                       autoComplete="off"
+                      onChange={() => setRequired((prev) => [false, prev[1]])}
                     />
                   </div>
                 </div>
@@ -52,13 +65,21 @@ const Login = () => {
                   <div className="control">
                     <input
                       type="text"
-                      className="input"
+                      className={`input ${
+                        required[1] ? "is-danger is-outlined" : ""
+                      }`}
                       placeholder="********"
                       name="password"
                       autoComplete="off"
+                      onChange={() => setRequired((prev) => [prev[0], false])}
                     />
                   </div>
                 </div>
+                {warning.length > 0 ? (
+                  <p className="has-text-danger">{warning}</p>
+                ) : (
+                  ""
+                )}
                 <div className="field">
                   <button
                     type="submit"
@@ -67,11 +88,12 @@ const Login = () => {
                     Login
                   </button>
                 </div>
-                {warning.length > 0 ? (
-                  <span className="has-text-danger">{warning}</span>
-                ) : (
-                  ""
-                )}
+                <p className="has-text-centered">
+                  Don't have an account?{" "}
+                  <Link to={"/signup"} className="has-text-weight-bold">
+                    Sign up
+                  </Link>
+                </p>
               </form>
             </div>
           </div>

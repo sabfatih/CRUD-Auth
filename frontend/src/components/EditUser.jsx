@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 
-const Signup = () => {
+const EditUser = () => {
   const [warning, setWarning] = useState("");
   const [required, setRequired] = useState([false, false, false, false]);
+  const { userId } = useParams();
 
   return (
     <section className="hero has-background-grey-light is-fullheight is-fullwidth">
@@ -47,8 +48,8 @@ const Signup = () => {
                   }
 
                   try {
-                    const newUser = await axios.post(
-                      "http://localhost:5000/users",
+                    const newUser = await axios.patch(
+                      `http://localhost:5000/users/${userId}`,
                       {
                         name,
                         email,
@@ -65,7 +66,7 @@ const Signup = () => {
                   }
                 }}
               >
-                <h1 className="title is-2">Sign up</h1>
+                <h1 className="title is-2">Update User</h1>
                 <div className="field">
                   <label className="label">Name</label>
                   <div className="control">
@@ -175,15 +176,12 @@ const Signup = () => {
                     type="submit"
                     className="button is-success is-fullwidth"
                   >
-                    Sign up
+                    Update
                   </button>
-                </div>
-                <p className="has-text-centered">
-                  Already have an account?{" "}
-                  <Link to={"/login"} className="has-text-weight-bold">
-                    Login
+                  <Link to={-1} className="button is-fullwidth mt-4">
+                    Cancel
                   </Link>
-                </p>
+                </div>
               </form>
             </div>
           </div>
@@ -193,4 +191,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default EditUser;

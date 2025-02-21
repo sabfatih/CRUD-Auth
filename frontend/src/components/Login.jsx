@@ -1,17 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser, reset } from "../features/authSlice.js";
 
 const Login = () => {
-  const [warning, setWarning] = useState("");
   const [required, setRequired] = useState([false, false]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, isError, isLoading, isSuccess } = useSelector(
+  const { user, isError, isLoading, isSuccess, message } = useSelector(
     (state) => state.auth
   );
+
+  useEffect(() => {
+    if (user || isSuccess) {
+      navigate("/dashboard");
+      dispatch(reset());
+    }
+  }, [user, isSuccess, dispatch, navigate]);
 
   const auth = async (e) => {
     e.preventDefault();
@@ -29,18 +35,6 @@ const Login = () => {
     }
 
     dispatch(loginUser({ email, password }));
-
-    try {
-      const foundUser = await axios.post("http://localhost:5000/login", {
-        email,
-        password,
-      });
-      setWarning("");
-      console.log(foundUser);
-    } catch (e) {
-      console.log(e);
-      setWarning(e.response.data.msg);
-    }
   };
 
   return (
@@ -50,6 +44,7 @@ const Login = () => {
           <div className="columns is-centered">
             <div className="column is-4">
               <form className="box" onSubmit={(e) => auth(e)}>
+                {isError && <p>{message}</p>}
                 <h1 className="title is-2">Sign in</h1>
                 <div className="field">
                   <label className="label">Email</label>
@@ -81,17 +76,12 @@ const Login = () => {
                     />
                   </div>
                 </div>
-                {warning.length > 0 ? (
-                  <p className="has-text-danger">{warning}</p>
-                ) : (
-                  ""
-                )}
                 <div className="field">
                   <button
                     type="submit"
                     className="button is-success is-fullwidth"
                   >
-                    Login
+                    {isLoading ? "Loading..." : "Login"}
                   </button>
                 </div>
                 <p className="has-text-centered">

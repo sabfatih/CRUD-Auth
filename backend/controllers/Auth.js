@@ -11,10 +11,12 @@ export const logIn = async (req, res) => {
     },
   });
 
-  if (!user) return res.status(404).json({ msg: "User not found" });
+  if (!user)
+    return res.status(404).json({ msg: "User not found or wrong password" });
 
   const match = await argon2.verify(user.password, req.body.password);
-  if (!match) return res.status(400).json({ msg: "Wrong password" });
+  if (!match)
+    return res.status(404).json({ msg: "User not found or wrong password" });
 
   req.session.userId = user.uuid;
 

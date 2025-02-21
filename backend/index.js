@@ -6,6 +6,8 @@ import ProductRoute from "./routes/ProductRoute.js";
 import UserRoute from "./routes/UserRoute.js";
 import AuthRoute from "./routes/AuthRoute.js";
 import SequelizeStore from "connect-session-sequelize";
+import { Buffer } from "buffer";
+globalThis.Buffer = Buffer;
 
 import db from "./config/Database.js";
 const sessionStore = SequelizeStore(session.Store);
@@ -26,7 +28,7 @@ app.use(
   session({
     secret: process.env.SESS_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     store,
     cookie: {
       secure: "auto",

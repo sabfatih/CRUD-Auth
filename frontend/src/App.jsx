@@ -1,9 +1,6 @@
-import { useState } from "react";
-import Navbar from "./components/Navbar";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
 import Welcome from "./components/Welcome";
-import Dashboard from "./pages/Dashboard";
 import Login from "./components/Login";
 import UserList from "./components/UserList";
 import ProductList from "./components/ProductList";
@@ -20,7 +17,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/users/edit/:id" element={<EditUser />} />
         <Route path="/" element={<Layout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Welcome />} />
           <Route path="/users" element={<UserList />} />
           <Route path="/products" element={<ProductList />} />
           <Route path="/products/add" element={<FormAddProduct />} />

@@ -1,8 +1,34 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React, { useEffect } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import { IoPerson, IoPricetag, IoHome, IoLogOut } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
+import { reset } from "../features/authSlice";
+import axios from "axios";
+import { logOut } from "../../../backend/controllers/Auth";
 
 const Sidebar = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user, isError, isLoading, isSuccess, message } = useSelector(
+    (state) => state.auth
+  );
+
+  useEffect(() => {
+    if (isError) {
+      navigate("/dashboard");
+      dispatch(reset());
+    }
+  }, [isError, dispatch, navigate, reset]);
+
+  const logout = async () => {
+    try {
+      dispatch(logOut());
+      navigate("/login");
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <div>
       <aside className="menu pl-2 has-shadow">
@@ -30,7 +56,7 @@ const Sidebar = () => {
         <p className="menu-label">Settings</p>
         <ul className="menu-list">
           <li>
-            <button className="button is-white">
+            <button onClick={logout} className="button is-white">
               <IoLogOut /> Log out
             </button>
           </li>

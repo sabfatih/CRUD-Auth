@@ -39,8 +39,21 @@ const getUserById = async (req, res) => {
 const createUser = async (req, res) => {
   const { name, email, password, confPassword, role } = req.body;
 
+  const foundUser = await User.findOne({
+    where: {
+      email: email,
+    },
+  });
+
+  if (foundUser) {
+    return res
+      .status(403)
+      .json({ msg: "There is user with this email, can't create user" });
+  }
+
   if (password !== confPassword)
     return res.status(400).json({ msg: "Password doesn't match" });
+
   if (password.length < 8)
     return res
       .status(400)
@@ -57,7 +70,10 @@ const createUser = async (req, res) => {
     });
     res.status(201).json({ msg: "User created successfully" });
   } catch (e) {
-    res.status(400).json({ msg: e.message });
+    res.status(400).json({
+      msg:
+        e.name === "SequelizeValidationError" ? e.errors[0].message : e.message,
+    });
   }
 };
 

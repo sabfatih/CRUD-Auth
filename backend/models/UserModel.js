@@ -26,7 +26,7 @@ const User = db.define(
       allowNull: false,
       validate: {
         notEmpty: true,
-        isEmail: true,
+        isEmail: { msg: "Email is not valid" },
       },
     },
     password: {

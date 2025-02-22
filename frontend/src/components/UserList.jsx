@@ -1,6 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const UserList = () => {
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (user && user.role !== "admin") {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
+
   return (
     <div>
       <h1 className="title">Users</h1>

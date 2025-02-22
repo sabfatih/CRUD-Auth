@@ -44,7 +44,9 @@ const Login = () => {
           <div className="columns is-centered">
             <div className="column is-4">
               <form className="box" onSubmit={(e) => auth(e)}>
-                {isError && <p>{message}</p>}
+                {isError && (
+                  <p className="has-text-centered has-text-danger">{message}</p>
+                )}
                 <h1 className="title is-2">Sign in</h1>
                 <div className="field">
                   <label className="label">Email</label>

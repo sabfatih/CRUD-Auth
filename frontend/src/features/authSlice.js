@@ -39,23 +39,18 @@ export const getMe = createAsyncThunk("user/getMe", async (_, thunkAPI) => {
   }
 });
 
-export const logout = createAsyncThunk("user/logout", async (_, thunkAPI) => {
-  try {
-    const response = await axios.delete("http://localhost:5000/logout");
-    return response.data;
-  } catch (e) {
-    if (e.response) {
-      const message = e.response.data.msg;
-      return thunkAPI.rejectWithValue(message);
-    }
-  }
+export const logoutUser = createAsyncThunk("user/logoutUser", async () => {
+  await axios.delete("http://localhost:5000/logout");
 });
 
 export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    reset: (state) => initialState,
+    reset: (state) => {
+      // console.log("RESET DIPANGGIL!");
+      return initialState;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(loginUser.pending, (state) => {

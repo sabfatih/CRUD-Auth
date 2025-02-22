@@ -2,27 +2,17 @@ import React, { useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { IoPerson, IoPricetag, IoHome, IoLogOut } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import { reset } from "../features/authSlice";
-import axios from "axios";
-import { logOut } from "../../../backend/controllers/Auth";
+import { reset, logoutUser } from "../features/authSlice";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, isError, isLoading, isSuccess, message } = useSelector(
-    (state) => state.auth
-  );
-
-  useEffect(() => {
-    if (isError) {
-      navigate("/dashboard");
-      dispatch(reset());
-    }
-  }, [isError, dispatch, navigate, reset]);
+  const { user } = useSelector((state) => state.auth);
 
   const logout = async () => {
     try {
-      dispatch(logOut());
+      dispatch(logoutUser());
+      dispatch(reset());
       navigate("/login");
     } catch (e) {
       console.log(e);
@@ -35,24 +25,29 @@ const Sidebar = () => {
         <p className="menu-label">General</p>
         <ul className="menu-list">
           <li>
-            <NavLink to={"/dashboard"}>
+            <NavLink to={"/home/dashboard"}>
               <IoHome /> Dashboard
             </NavLink>
           </li>
           <li>
-            <NavLink to={"/products"}>
+            <NavLink to={"/home/products"}>
               <IoPricetag /> Products
             </NavLink>
           </li>
         </ul>
-        <p className="menu-label">Admin</p>
-        <ul className="menu-list">
-          <li>
-            <NavLink to={"/users"}>
-              <IoPerson /> Users
-            </NavLink>
-          </li>
-        </ul>
+        {user && user.role === "admin" && (
+          <>
+            <p className="menu-label">Admin</p>
+            <ul className="menu-list">
+              <li>
+                <NavLink to={"/home/users"}>
+                  <IoPerson /> Users
+                </NavLink>
+              </li>
+            </ul>
+            /home
+          </>
+        )}
         <p className="menu-label">Settings</p>
         <ul className="menu-list">
           <li>

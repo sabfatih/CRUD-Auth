@@ -2,7 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser, reset } from "../features/authSlice.js";
+import {
+  getMe,
+  loginUser,
+  resetAuth,
+  resetGetMe,
+} from "../features/authSlice.js";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [required, setRequired] = useState([false, false]);
@@ -12,12 +18,33 @@ const Login = () => {
     (state) => state.auth
   );
 
+  const { getMeSuccess } = useSelector((state) => state.getMe);
+
+  useEffect(() => {
+    dispatch(getMe());
+  }, []);
+
+  useEffect(() => {
+    if (getMeSuccess) {
+      toast.info("Please Log out first from your account!");
+      dispatch(resetGetMe());
+      navigate("/home");
+    }
+  }, [dispatch, getMeSuccess]);
+
   useEffect(() => {
     if (user || isSuccess) {
-      navigate("/dashboard");
-      dispatch(reset());
+      navigate("/home/dashboard");
+      dispatch(resetAuth());
+      dispatch(resetGetMe());
     }
   }, [user, isSuccess, dispatch, navigate]);
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+  }, [isError, toast]);
 
   const auth = async (e) => {
     e.preventDefault();
@@ -44,9 +71,9 @@ const Login = () => {
           <div className="columns is-centered">
             <div className="column is-4">
               <form className="box" onSubmit={(e) => auth(e)}>
-                {isError && (
+                {/* {isError && (
                   <p className="has-text-centered has-text-danger">{message}</p>
-                )}
+                )} */}
                 <h1 className="title is-2">Sign in</h1>
                 <div className="field">
                   <label className="label">Email</label>

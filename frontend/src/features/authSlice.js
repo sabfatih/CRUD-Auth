@@ -9,6 +9,14 @@ const initialState = {
   message: "",
 };
 
+const getMeinitialState = {
+  getMeUser: null,
+  getMeError: false,
+  getMeSuccess: false,
+  getMeLoading: false,
+  getMeMessage: "",
+};
+
 export const loginUser = createAsyncThunk(
   "user/loginUser",
   async (user, thunkAPI) => {
@@ -43,14 +51,41 @@ export const logoutUser = createAsyncThunk("user/logoutUser", async () => {
   await axios.delete("http://localhost:5000/logout");
 });
 
+export const createAndLoginUser = createAsyncThunk(
+  "user/createUser",
+  async (user, thunkAPI) => {
+    try {
+      const responseCreateUser = await axios.post(
+        "http://localhost:5000/users",
+        {
+          name: user.name,
+          email: user.email,
+          password: user.password,
+          confPassword: user.confPassword,
+          role: user.role,
+        }
+      );
+
+      const responseLogin = await axios.post("http://localhost:5000/login", {
+        email: user.email,
+        password: user.password,
+      });
+
+      return responseLogin.data;
+    } catch (e) {
+      if (e.response) {
+        const message = e.response.data.msg;
+        return thunkAPI.rejectWithValue(message);
+      }
+    }
+  }
+);
+
 export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    reset: (state) => {
-      // console.log("RESET DIPANGGIL!");
-      return initialState;
-    },
+    resetAuth: (state) => initialState,
   },
   extraReducers: (builder) => {
     builder.addCase(loginUser.pending, (state) => {
@@ -67,16 +102,16 @@ export const authSlice = createSlice({
       state.message = action.payload;
     });
 
-    // getMe
-    builder.addCase(getMe.pending, (state) => {
+    // createAndLoginUser
+    builder.addCase(createAndLoginUser.pending, (state) => {
       state.isLoading = true;
     });
-    builder.addCase(getMe.fulfilled, (state, action) => {
+    builder.addCase(createAndLoginUser.fulfilled, (state, action) => {
       state.isLoading = false;
       state.isFulfilled = true;
       state.user = action.payload;
     });
-    builder.addCase(getMe.rejected, (state, action) => {
+    builder.addCase(createAndLoginUser.rejected, (state, action) => {
       state.isLoading = false;
       state.isError = true;
       state.message = action.payload;
@@ -84,5 +119,31 @@ export const authSlice = createSlice({
   },
 });
 
-export const { reset } = authSlice.actions;
-export default authSlice.reducer;
+export const getMeSlice = createSlice({
+  name: "getMe",
+  initialState: getMeinitialState,
+  reducers: {
+    resetGetMe: (state) => getMeinitialState,
+  },
+  extraReducers: (builder) => {
+    // getMe
+    builder.addCase(getMe.pending, (state) => {
+      state.getMeLoading = true;
+    });
+    builder.addCase(getMe.fulfilled, (state, action) => {
+      state.getMeLoading = false;
+      state.getMeSuccess = true;
+      state.getMeUser = action.payload;
+    });
+    builder.addCase(getMe.rejected, (state, action) => {
+      state.getMeLoading = false;
+      state.getMeError = true;
+      state.getMeMessage = action.payload;
+    });
+  },
+});
+
+export const { resetAuth } = authSlice.actions;
+export const { resetGetMe } = getMeSlice.actions;
+export const authReducer = authSlice.reducer;
+export const getMeReducer = getMeSlice.reducer;

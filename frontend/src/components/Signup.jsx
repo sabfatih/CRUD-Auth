@@ -1,10 +1,77 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createAndLoginUser,
+  getMe,
+  resetAuth,
+  resetGetMe,
+} from "../features/authSlice";
+import { toast } from "react-toastify";
 
 const Signup = () => {
-  const [warning, setWarning] = useState("");
   const [required, setRequired] = useState([false, false, false, false]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { isError, isLoading, isSuccess, message } = useSelector(
+    (state) => state.auth
+  );
+
+  const { getMeSuccess } = useSelector((state) => state.getMe);
+
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (getMeSuccess) {
+      toast.info("Please Log out first from your account!");
+      dispatch(resetGetMe());
+      navigate("/home");
+    }
+  }, [getMeSuccess]);
+
+  useEffect(() => {
+    if (isError) {
+      toast.warning(message);
+      dispatch(reset());
+    }
+  }, [isError, toast]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success(message);
+      navigate("/home/dashboard");
+      dispatch(reset());
+    }
+  }, [isSuccess]);
+
+  const signup = async (e) => {
+    e.preventDefault();
+    const name = e.target.name.value;
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const confPassword = e.target.confPassword.value;
+    const role = e.target.role.value;
+
+    if (!name || !email || !password || !confPassword) {
+      setRequired((prev) =>
+        prev.map((item, i) => {
+          if (i == 0) return !name ? true : item;
+          if (i == 1) return !email ? true : item;
+          if (i == 2) return !password ? true : item;
+          if (i == 3) return !confPassword ? true : item;
+          return item;
+        })
+      );
+
+      return false;
+    }
+
+    dispatch(createAndLoginUser({ name, email, password, confPassword, role }));
+  };
 
   return (
     <section className="hero has-background-grey-light is-fullheight is-fullwidth">
@@ -12,59 +79,7 @@ const Signup = () => {
         <div className="container">
           <div className="columns is-centered">
             <div className="column is-4">
-              <form
-                className="box"
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  const name = e.target.name.value;
-                  const email = e.target.email.value;
-                  const password = e.target.password.value;
-                  const confPassword = e.target.confPassword.value;
-                  const role = e.target.role.value;
-
-                  if (!name || !email || !password || !confPassword) {
-                    setRequired((prev) =>
-                      prev.map((item, i) => {
-                        if (i == 0) return !name ? true : item;
-                        if (i == 1) return !email ? true : item;
-                        if (i == 2) return !password ? true : item;
-                        if (i == 3) return !confPassword ? true : item;
-                        return item;
-                      })
-                    );
-
-                    return false;
-                  }
-                  console.log("tess");
-
-                  if (password !== confPassword) {
-                    setWarning("Password doesn't match");
-                    return false;
-                  }
-                  if (password.length < 8) {
-                    setWarning("Password must be at least 8 character");
-                    return false;
-                  }
-
-                  try {
-                    const newUser = await axios.post(
-                      "http://localhost:5000/users",
-                      {
-                        name,
-                        email,
-                        password,
-                        confPassword,
-                        role,
-                      }
-                    );
-                    setWarning("");
-                    console.log(newUser);
-                  } catch (e) {
-                    console.log(e);
-                    setWarning(e.response.data.msg);
-                  }
-                }}
-              >
+              <form className="box" onSubmit={(e) => signup(e)}>
                 <h1 className="title is-2">Sign up</h1>
                 <div className="field">
                   <label className="label">Name</label>
@@ -165,17 +180,12 @@ const Signup = () => {
                     </div>
                   </div>
                 </div>
-                {warning.length > 0 ? (
-                  <p className="has-text-danger">{warning}</p>
-                ) : (
-                  ""
-                )}
                 <div className="field">
                   <button
                     type="submit"
                     className="button is-success is-fullwidth"
                   >
-                    Sign up
+                    {isLoading ? "Loading..." : "Sign Up"}
                   </button>
                 </div>
                 <p className="has-text-centered">

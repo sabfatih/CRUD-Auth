@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const UserList = () => {
   const navigate = useNavigate();
@@ -8,7 +9,8 @@ const UserList = () => {
 
   useEffect(() => {
     if (user && user.role !== "admin") {
-      navigate("/dashboard");
+      toast.error("Forbidden Access!");
+      navigate("/home/dashboard");
     }
   }, [user, navigate]);
 

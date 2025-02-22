@@ -2,17 +2,17 @@ import React, { useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { IoPerson, IoPricetag, IoHome, IoLogOut } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import { reset, logoutUser } from "../features/authSlice";
+import { resetAuth, logoutUser, resetGetMe } from "../features/authSlice";
 
-const Sidebar = () => {
+const Sidebar = ({ userRole }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
 
   const logout = async () => {
     try {
-      dispatch(logoutUser());
-      dispatch(reset());
+      await dispatch(logoutUser()).unwrap();
+      dispatch(resetGetMe());
+      dispatch(resetAuth());
       navigate("/login");
     } catch (e) {
       console.log(e);
@@ -35,7 +35,7 @@ const Sidebar = () => {
             </NavLink>
           </li>
         </ul>
-        {user && user.role === "admin" && (
+        {userRole === "admin" && (
           <>
             <p className="menu-label">Admin</p>
             <ul className="menu-list">
@@ -45,7 +45,6 @@ const Sidebar = () => {
                 </NavLink>
               </li>
             </ul>
-            /home
           </>
         )}
         <p className="menu-label">Settings</p>

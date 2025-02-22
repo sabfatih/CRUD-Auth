@@ -14,6 +14,7 @@ const DashboardLayout = () => {
   const { getMeUser, getMeError } = useSelector((state) => state.getMe);
 
   useEffect(() => {
+    dispatch(resetGetMe());
     dispatch(getMe());
   }, [dispatch]);
 
@@ -23,23 +24,27 @@ const DashboardLayout = () => {
       dispatch(resetGetMe());
       navigate("/login");
     }
-  }, [getMeError, navigate]);
+  }, [getMeError, navigate, dispatch]);
   return (
-    <>
-      <Navbar userRole={getMeUser && getMeUser.role ? getMeUser.role : null} />
-      <div className="columns mt-6" style={{ minHeight: "100vh" }}>
-        <div className="column is-2">
-          <Sidebar
-            userRole={getMeUser && getMeUser.role ? getMeUser.role : null}
-          />
+    getMeUser && (
+      <>
+        <Navbar
+          userRole={getMeUser && getMeUser.role ? getMeUser.role : null}
+        />
+        <div className="columns mt-6" style={{ minHeight: "100vh" }}>
+          <div className="column is-2">
+            <Sidebar
+              userRole={getMeUser && getMeUser.role ? getMeUser.role : null}
+            />
+          </div>
+          <div className="column has-background-light">
+            <main>
+              <Outlet />
+            </main>
+          </div>
         </div>
-        <div className="column has-background-light">
-          <main>
-            <Outlet />
-          </main>
-        </div>
-      </div>
-    </>
+      </>
+    )
   );
 };
 

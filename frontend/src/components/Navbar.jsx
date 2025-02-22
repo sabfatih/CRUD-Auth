@@ -1,8 +1,8 @@
 import React from "react";
 import { NavLink, Link } from "react-router-dom";
 
-import adminLogo from "../../public/customer-call.png";
-import userLogo from "../../public/user.png";
+import adminLogo from "../public/customer-call.png";
+import userLogo from "../public/user.png";
 
 const Navbar = ({ userRole }) => {
   return (

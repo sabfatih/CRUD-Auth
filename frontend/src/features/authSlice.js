@@ -66,11 +66,16 @@ export const createAndLoginUser = createAsyncThunk(
         }
       );
 
+      if (responseCreateUser.data.msg !== "User created successfully") {
+        return responseCreateUser.data;
+      }
+
       const responseLogin = await axios.post("http://localhost:5000/login", {
         email: user.email,
         password: user.password,
       });
 
+      console.log(" responseLogin", responseLogin);
       return responseLogin.data;
     } catch (e) {
       if (e.response) {
@@ -108,7 +113,7 @@ export const authSlice = createSlice({
     });
     builder.addCase(createAndLoginUser.fulfilled, (state, action) => {
       state.isLoading = false;
-      state.isFulfilled = true;
+      state.isSuccess = true;
       state.user = action.payload;
     });
     builder.addCase(createAndLoginUser.rejected, (state, action) => {

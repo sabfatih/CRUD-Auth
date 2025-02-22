@@ -15,38 +15,66 @@ const Signup = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { isError, isLoading, isSuccess, message } = useSelector(
+  const { user, isError, isLoading, isSuccess, message } = useSelector(
     (state) => state.auth
   );
 
   const { getMeSuccess } = useSelector((state) => state.getMe);
 
+  // useEffect(() => {
+  //   dispatch(getMe());
+  // }, [dispatch]);
+
+  // useEffect(() => {
+  //   if (getMeSuccess) {
+  //     toast.info("Please Log out first");
+  //     dispatch(resetGetMe());
+  //     navigate("/home");
+  //   }
+  // }, [getMeSuccess, dispatch, navigate]);
+
+  // useEffect(() => {
+  //   if (isError) {
+  //     toast.warning(message);
+  //     dispatch(resetAuth());
+  //   }
+  // }, [isError, toast, dispatch]);
+
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     toast.success(message);
+  //     navigate("/home/dashboard");
+  //     dispatch(resetAuth());
+  //   }
+  // }, [isSuccess, dispatch, navigate]);
+
   useEffect(() => {
+    dispatch(resetGetMe());
     dispatch(getMe());
   }, [dispatch]);
 
   useEffect(() => {
     if (getMeSuccess) {
-      toast.info("Please Log out first from your account!");
+      toast.info("Please Log out first");
       dispatch(resetGetMe());
       navigate("/home");
     }
-  }, [getMeSuccess]);
+  }, [dispatch, getMeSuccess]);
+
+  useEffect(() => {
+    if (user || isSuccess) {
+      toast.success("Sign up successfully");
+      navigate("/home/dashboard");
+      dispatch(resetAuth());
+      dispatch(resetGetMe());
+    }
+  }, [user, isSuccess, dispatch, navigate]);
 
   useEffect(() => {
     if (isError) {
       toast.warning(message);
-      dispatch(reset());
     }
   }, [isError, toast]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success(message);
-      navigate("/home/dashboard");
-      dispatch(reset());
-    }
-  }, [isSuccess]);
 
   const signup = async (e) => {
     e.preventDefault();

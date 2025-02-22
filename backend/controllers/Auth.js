@@ -29,6 +29,17 @@ export const logIn = async (req, res) => {
 };
 
 export const Me = async (req, res) => {
+  // res.setHeader(
+  //   "Cache-Control",
+  //   "no-store, no-cache, must-revalidate, proxy-revalidate"
+  // );
+  // res.setHeader("Pragma", "no-cache");
+  // res.setHeader("Expires", "0");
+
+  // ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  // if i want to remove the bug that user still can access prev page when they're just logged out,
+  // i can prevent the cache
+
   if (!req.session.userId)
     return res.status(401).json({ msg: "Please login to your account" });
 

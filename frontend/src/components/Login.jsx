@@ -21,12 +21,13 @@ const Login = () => {
   const { getMeSuccess } = useSelector((state) => state.getMe);
 
   useEffect(() => {
+    dispatch(resetGetMe());
     dispatch(getMe());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (getMeSuccess) {
-      toast.info("Please Log out first from your account!");
+      toast.info("Please Log out first");
       dispatch(resetGetMe());
       navigate("/home");
     }
@@ -34,6 +35,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user || isSuccess) {
+      toast.success("Sign in successfully");
       navigate("/home/dashboard");
       dispatch(resetAuth());
       dispatch(resetGetMe());
@@ -42,7 +44,7 @@ const Login = () => {
 
   useEffect(() => {
     if (isError) {
-      toast.error(message);
+      toast.warning(message);
     }
   }, [isError, toast]);
 

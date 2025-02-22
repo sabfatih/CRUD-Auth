@@ -1,6 +1,13 @@
 import React, { useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { IoPerson, IoPricetag, IoHome, IoLogOut } from "react-icons/io5";
+import {
+  IoPerson,
+  IoPricetag,
+  IoHome,
+  IoLogOut,
+  IoPersonSharp,
+  IoPersonCircle,
+} from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { resetAuth, logoutUser, resetGetMe } from "../features/authSlice";
 
@@ -52,6 +59,11 @@ const Sidebar = ({ userRole }) => {
           <li>
             <button onClick={logout} className="button is-white">
               <IoLogOut /> Log out
+            </button>
+          </li>
+          <li>
+            <button onClick={logout} className="button is-white">
+              <IoPersonCircle /> Profile
             </button>
           </li>
         </ul>

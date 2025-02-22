@@ -47,7 +47,7 @@ const createUser = async (req, res) => {
 
   if (foundUser) {
     return res
-      .status(403)
+      .status(409)
       .json({ msg: "There is user with this email, can't create user" });
   }
 

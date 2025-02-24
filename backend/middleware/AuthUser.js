@@ -28,3 +28,17 @@ export const adminOnly = async (req, res, next) => {
 
   next();
 };
+
+export const adminOrOwnerOnly = async (req, res, next) => {
+  const user = await User.findOne({
+    where: {
+      uuid: req.session.userId,
+    },
+  });
+  if (!user) return res.status(404).json({ msg: "User not found" });
+
+  if (user.role !== "admin" && user.uuid !== req.params.id)
+    return res.status(403).json({ msg: "Forbidden access" });
+
+  next();
+};

@@ -2,11 +2,12 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import { ToastContainer, Bounce } from "react-toastify";
 
-const Layout = () => {
+const ToastLayout = () => {
   return (
     <>
       <Outlet />
       <ToastContainer
+        stacked
         position="top-right"
         autoClose={5000}
         hideProgressBar={false}
@@ -23,4 +24,4 @@ const Layout = () => {
   );
 };
 
-export default Layout;
+export default ToastLayout;

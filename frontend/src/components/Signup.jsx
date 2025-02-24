@@ -9,9 +9,12 @@ import {
   resetGetMe,
 } from "../features/authSlice";
 import { toast } from "react-toastify";
+import { IoEyeOff } from "react-icons/io5";
 
 const Signup = () => {
   const [required, setRequired] = useState([false, false, false, false]);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfPassword, setShowConfPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -20,33 +23,6 @@ const Signup = () => {
   );
 
   const { getMeSuccess } = useSelector((state) => state.getMe);
-
-  // useEffect(() => {
-  //   dispatch(getMe());
-  // }, [dispatch]);
-
-  // useEffect(() => {
-  //   if (getMeSuccess) {
-  //     toast.info("Please Log out first");
-  //     dispatch(resetGetMe());
-  //     navigate("/home");
-  //   }
-  // }, [getMeSuccess, dispatch, navigate]);
-
-  // useEffect(() => {
-  //   if (isError) {
-  //     toast.warning(message);
-  //     dispatch(resetAuth());
-  //   }
-  // }, [isError, toast, dispatch]);
-
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //     toast.success(message);
-  //     navigate("/home/dashboard");
-  //     dispatch(resetAuth());
-  //   }
-  // }, [isSuccess, dispatch, navigate]);
 
   useEffect(() => {
     dispatch(resetGetMe());
@@ -57,7 +33,7 @@ const Signup = () => {
     if (getMeSuccess) {
       toast.info("Please Log out first");
       dispatch(resetGetMe());
-      navigate("/home");
+      navigate("/home/dashboard");
     }
   }, [dispatch, getMeSuccess]);
 
@@ -117,7 +93,7 @@ const Signup = () => {
                       className={`input ${
                         required[0] ? "is-danger is-outlined" : ""
                       }`}
-                      placeholder="name"
+                      placeholder="Name"
                       name="name"
                       autoComplete="off"
                       onChange={() =>
@@ -139,7 +115,7 @@ const Signup = () => {
                       className={`input ${
                         required[1] ? "is-danger is-outlined" : ""
                       }`}
-                      placeholder="email"
+                      placeholder="Email"
                       name="email"
                       autoComplete="off"
                       onChange={() =>
@@ -157,11 +133,11 @@ const Signup = () => {
                   <label className="label">Password</label>
                   <div className="control">
                     <input
-                      type="text"
+                      type={`${showPassword ? "text" : "password"}`}
                       className={`input ${
                         required[2] ? "is-danger is-outlined" : ""
                       }`}
-                      placeholder="********"
+                      placeholder="Password"
                       name="password"
                       autoComplete="off"
                       onChange={() =>
@@ -173,17 +149,30 @@ const Signup = () => {
                         ])
                       }
                     />
+                    <>
+                      <input
+                        onChange={(e) => {
+                          setShowPassword(e.target.checked);
+                        }}
+                        name="showPassword"
+                        type="checkbox"
+                        className="mr-1"
+                      />
+                      <label htmlFor="showPassword" className="is-vcentered">
+                        Show password
+                      </label>
+                    </>
                   </div>
                 </div>
                 <div className="field">
                   <label className="label">Confirm password</label>
                   <div className="control">
                     <input
-                      type="text"
+                      type={`${showConfPassword ? "text" : "password"}`}
                       className={`input ${
                         required[3] ? "is-danger is-outlined" : ""
                       }`}
-                      placeholder="********"
+                      placeholder="Confirm password"
                       name="confPassword"
                       autoComplete="off"
                       onChange={() =>
@@ -195,6 +184,19 @@ const Signup = () => {
                         ])
                       }
                     />
+                    <>
+                      <input
+                        onChange={(e) => {
+                          setShowConfPassword(e.target.checked);
+                        }}
+                        name="showPassword"
+                        type="checkbox"
+                        className="mr-1"
+                      />
+                      <label htmlFor="showPassword" className="is-vcentered">
+                        Show confirmed password
+                      </label>
+                    </>
                   </div>
                 </div>
                 <div className="field">

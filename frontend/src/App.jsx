@@ -5,21 +5,18 @@ import Login from "./components/Login";
 import UserList from "./components/UserList";
 import ProductList from "./components/ProductList";
 import Signup from "./components/Signup";
-import EditUser from "./components/EditUser";
 import FormAddProduct from "./components/FormAddProduct";
 import FormEditProduct from "./components/FormEditProduct";
-
-import { ToastContainer } from "react-toastify";
-import Layout from "./pages/Layout";
+import ToastLayout from "./pages/ToastLayout";
+import Profile from "./components/Profile";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout />}>
+        <Route path="/" element={<ToastLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/users/edit/:id" element={<EditUser />} />
           <Route path="/home" element={<DashboardLayout />}>
             <Route path="/home/dashboard" element={<Welcome />} />
             <Route path="/home/users" element={<UserList />} />
@@ -29,6 +26,7 @@ function App() {
               path="/home/products/edit/:id"
               element={<FormEditProduct />}
             />
+            <Route path="/home/profile/:id" element={<Profile />} />
           </Route>
         </Route>
       </Routes>

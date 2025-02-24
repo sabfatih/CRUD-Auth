@@ -7,7 +7,7 @@ const getProducts = async (req, res) => {
     let response;
     if (req.role === "admin") {
       response = await Product.findAll({
-        attributes: ["uuid", "name", "price"],
+        attributes: ["uuid", "name", "price", "createdAt"],
         include: [
           {
             model: User,
@@ -17,7 +17,7 @@ const getProducts = async (req, res) => {
       });
     } else {
       response = await Product.findAll({
-        attributes: ["uuid", "name", "price"],
+        attributes: ["uuid", "name", "price", "createdAt"],
         include: [
           {
             model: User,
@@ -40,7 +40,7 @@ const getProductById = async (req, res) => {
     let response;
     if (req.role === "admin") {
       response = await Product.findOne({
-        attributes: ["uuid", "name", "price"],
+        attributes: ["uuid", "name", "price", "createdBy"],
         include: [
           {
             model: User,
@@ -53,7 +53,7 @@ const getProductById = async (req, res) => {
       });
     } else {
       response = await Product.findOne({
-        attributes: ["uuid", "name", "price"],
+        attributes: ["uuid", "name", "price", "createdBy"],
         include: [
           {
             model: User,

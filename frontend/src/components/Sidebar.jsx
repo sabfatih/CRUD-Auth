@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   IoPerson,
@@ -8,24 +8,8 @@ import {
   IoPersonSharp,
   IoPersonCircle,
 } from "react-icons/io5";
-import { useDispatch, useSelector } from "react-redux";
-import { resetAuth, logoutUser, resetGetMe } from "../features/authSlice";
 
 const Sidebar = ({ userRole }) => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const logout = async () => {
-    try {
-      await dispatch(logoutUser()).unwrap();
-      dispatch(resetGetMe());
-      dispatch(resetAuth());
-      navigate("/login");
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   return (
     <div>
       <aside className="menu pl-2 has-shadow">
@@ -56,16 +40,11 @@ const Sidebar = ({ userRole }) => {
         )}
         <p className="menu-label">Settings</p>
         <ul className="menu-list">
-          <li>
-            <button onClick={logout} className="button is-white">
+          {/* <li>
+            <button onClick={() => {}} className="button is-white is-clipped">
               <IoLogOut /> Log out
             </button>
-          </li>
-          <li>
-            <button onClick={logout} className="button is-white">
-              <IoPersonCircle /> Profile
-            </button>
-          </li>
+          </li> */}
         </ul>
       </aside>
     </div>

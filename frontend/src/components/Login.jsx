@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 const Login = () => {
   const [required, setRequired] = useState([false, false]);
   const dispatch = useDispatch();
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { user, isError, isLoading, isSuccess, message } = useSelector(
     (state) => state.auth
@@ -29,7 +30,7 @@ const Login = () => {
     if (getMeSuccess) {
       toast.info("Please Log out first");
       dispatch(resetGetMe());
-      navigate("/home");
+      navigate("/home/dashboard");
     }
   }, [dispatch, getMeSuccess]);
 
@@ -85,7 +86,7 @@ const Login = () => {
                       className={`input ${
                         required[0] ? "is-danger is-outlined" : ""
                       }`}
-                      placeholder="email"
+                      placeholder="Email"
                       name="email"
                       autoComplete="off"
                       onChange={() => setRequired((prev) => [false, prev[1]])}
@@ -96,15 +97,31 @@ const Login = () => {
                   <label className="label">Password</label>
                   <div className="control">
                     <input
-                      type="text"
+                      type={`${showPassword ? "text" : "password"}`}
                       className={`input ${
                         required[1] ? "is-danger is-outlined" : ""
                       }`}
-                      placeholder="********"
+                      placeholder="Password"
                       name="password"
                       autoComplete="off"
                       onChange={() => setRequired((prev) => [prev[0], false])}
                     />
+                    <>
+                      <input
+                        onChange={(e) => {
+                          setShowPassword(e.target.checked);
+                        }}
+                        name="showPassword"
+                        type="checkbox"
+                        className="mr-1"
+                      />
+                      <label
+                        htmlFor="showPassword"
+                        className="is-vcentered is-size-7"
+                      >
+                        Show password
+                      </label>
+                    </>
                   </div>
                 </div>
                 <div className="field">

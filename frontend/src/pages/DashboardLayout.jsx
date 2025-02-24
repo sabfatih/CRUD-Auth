@@ -28,9 +28,7 @@ const DashboardLayout = () => {
   return (
     getMeUser && (
       <>
-        <Navbar
-          userRole={getMeUser && getMeUser.role ? getMeUser.role : null}
-        />
+        <Navbar user={getMeUser && (getMeUser ? getMeUser : null)} />
         <div className="columns mt-6" style={{ minHeight: "100vh" }}>
           <div className="column is-2">
             <Sidebar

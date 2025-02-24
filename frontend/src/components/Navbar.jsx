@@ -4,7 +4,7 @@ import { NavLink, Link } from "react-router-dom";
 import adminLogo from "../public/customer-call.png";
 import userLogo from "../public/user.png";
 
-const Navbar = ({ userRole }) => {
+const Navbar = ({ user }) => {
   return (
     <nav
       className="navbar is-fixed-top has-shadow"
@@ -12,9 +12,9 @@ const Navbar = ({ userRole }) => {
       aria-label="main navigation"
     >
       <div className="navbar-brand">
-        <NavLink to="/dashboard" className="navbar-item">
+        <NavLink to={`/home/profile/${user.uuid}`} className="navbar-item">
           <img
-            src={userRole === "admin" ? adminLogo : userLogo}
+            src={user.role === "admin" ? adminLogo : userLogo}
             width="28"
             height="28"
           />

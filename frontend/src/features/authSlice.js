@@ -93,6 +93,7 @@ export const authSlice = createSlice({
     resetAuth: (state) => initialState,
   },
   extraReducers: (builder) => {
+    // login
     builder.addCase(loginUser.pending, (state) => {
       state.isLoading = true;
     });

@@ -36,6 +36,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user || isSuccess) {
+      toast.dismiss();
       toast.success("Sign in successfully");
       navigate("/home/dashboard");
       dispatch(resetAuth());
@@ -65,6 +66,7 @@ const Login = () => {
     }
 
     dispatch(loginUser({ email, password }));
+    dispatch(resetAuth());
   };
 
   return (
@@ -89,7 +91,10 @@ const Login = () => {
                       placeholder="Email"
                       name="email"
                       autoComplete="off"
-                      onChange={() => setRequired((prev) => [false, prev[1]])}
+                      onChange={() => {
+                        setRequired((prev) => [false, prev[1]]);
+                        toast.dismiss();
+                      }}
                     />
                   </div>
                 </div>
@@ -104,7 +109,10 @@ const Login = () => {
                       placeholder="Password"
                       name="password"
                       autoComplete="off"
-                      onChange={() => setRequired((prev) => [prev[0], false])}
+                      onChange={() => {
+                        setRequired((prev) => [prev[0], false]);
+                        toast.dismiss();
+                      }}
                     />
                     <>
                       <input
@@ -134,7 +142,14 @@ const Login = () => {
                 </div>
                 <p className="has-text-centered">
                   Don't have an account?{" "}
-                  <Link to={"/signup"} className="has-text-weight-bold">
+                  <Link
+                    to={"/signup"}
+                    onClick={() => {
+                      toast.dismiss();
+                      dispatch(resetAuth());
+                    }}
+                    className="has-text-weight-bold"
+                  >
                     Sign up
                   </Link>
                 </p>

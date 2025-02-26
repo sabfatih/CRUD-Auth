@@ -23,7 +23,7 @@ export const adminOnly = async (req, res, next) => {
     },
   });
   if (!user) return res.status(404).json({ msg: "User not found" });
-  if (user.role !== "admin")
+  if (user.role !== "SUPERADMIN" && user.role !== "admin")
     return res.status(403).json({ msg: "Forbidden access" });
 
   next();
@@ -37,7 +37,11 @@ export const adminOrOwnerOnly = async (req, res, next) => {
   });
   if (!user) return res.status(404).json({ msg: "User not found" });
 
-  if (user.role !== "admin" && user.uuid !== req.params.id)
+  if (
+    user.role !== "SUPERADMIN" &&
+    user.role !== "admin" &&
+    user.uuid !== req.params.id
+  )
     return res.status(403).json({ msg: "Forbidden access" });
 
   next();

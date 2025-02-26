@@ -42,6 +42,10 @@ const User = db.define(
       allowNull: false,
       validate: {
         notEmpty: true,
+        isIn: {
+          args: [["user", "admin", "SUPERADMIN"]],
+          msg: "Invalid role",
+        },
       },
     },
   },

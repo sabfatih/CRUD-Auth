@@ -1,19 +1,27 @@
+import { Op, Sequelize } from "sequelize";
 import User from "../models/UserModel.js";
 import argon2 from "argon2";
 
 const getUsers = async (req, res) => {
   try {
     let response;
-    if (req.role === "admin") {
+    if (req.role === "SUPERADMIN" || req.role === "admin") {
       response = await User.findAll({
-        attributes: ["uuid", "name", "email", "role"],
-      });
-    } else {
-      response = await User.findAll({
-        attributes: ["uuid", "name", "email", "role"],
         where: {
-          id: req.userId,
+          role: { [Op.not]: "SUPERADMIN" },
         },
+        attributes: ["uuid", "name", "email", "role"],
+        order: [
+          [
+            Sequelize.literal(`
+          CASE
+            WHEN role = 'admin' THEN 1
+            WHEN role = 'user' THEN 2
+            ELSE 3
+          END
+          `),
+          ],
+        ],
       });
     }
     res.status(200).json(response);
@@ -26,8 +34,16 @@ const getUserById = async (req, res) => {
   try {
     const response = await User.findOne({
       where: {
-        uuid: req.params.id,
+        [Op.and]: [
+          {
+            uuid: req.params.id,
+          },
+          req.role === "SUPERADMIN" || req.role === "admin"
+            ? {}
+            : { id: req.userId },
+        ],
       },
+
       attributes: ["uuid", "name", "email", "role"],
     });
     res.status(200).json(response);
@@ -109,12 +125,12 @@ const updateUser = async (req, res) => {
             name,
             email,
             password: hashNewPassword,
-            role,
+            role: user.role === "SUPERADMIN" ? user.role : role,
           }
         : {
             name,
             email,
-            role,
+            role: user.role === "SUPERADMIN" ? user.role : role,
           },
       {
         where: {

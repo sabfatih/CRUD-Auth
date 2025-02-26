@@ -26,7 +26,7 @@ const Sidebar = ({ userRole }) => {
             </NavLink>
           </li>
         </ul>
-        {userRole === "admin" && (
+        {(userRole === "SUPERADMIN" || userRole === "admin") && (
           <>
             <p className="menu-label">Admin</p>
             <ul className="menu-list">

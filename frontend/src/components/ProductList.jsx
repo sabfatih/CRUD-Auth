@@ -7,7 +7,6 @@ const ProductList = () => {
   const getAllProducts = async () => {
     const response = await axios.get("http://localhost:5000/products");
     setProducts(response.data);
-    console.log(" getAllProducts ~ response.data", response.data);
   };
 
   const dateFormat = (productCreatedAt) => {

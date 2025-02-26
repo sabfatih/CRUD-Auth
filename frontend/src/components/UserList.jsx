@@ -16,16 +16,19 @@ const UserList = () => {
   };
 
   useEffect(() => {
-    if (getMeUser && getMeUser.role !== "admin") {
+    if (
+      getMeUser &&
+      (getMeUser.role === "SUPERADMIN" || getMeUser.role === "admin")
+    ) {
+      getAllUsers();
+    } else {
       toast.error("Forbidden Access!");
       navigate("/home/dashboard");
-    } else {
-      getAllUsers();
     }
   }, [getMeUser, navigate]);
   return (
     getMeUser &&
-    getMeUser.role === "admin" && (
+    (getMeUser.role === "SUPERADMIN" || getMeUser.role === "admin") && (
       <>
         <h1 className="title">Users</h1>
         <h2 className="subtitle">List of users</h2>
@@ -36,29 +39,23 @@ const UserList = () => {
               <th>Name</th>
               <th>Email</th>
               <th>Role</th>
-              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {users.map((user, i) => {
               return (
-                <tr key={i}>
+                <tr
+                  key={i}
+                  className="is-clickable"
+                  onClick={() => navigate(`/home/profile/${user.uuid}`)}
+                >
                   <th>{i + 1}</th>
                   <th>{user.name}</th>
                   <th>{user.email}</th>
-                  <th>{user.role}</th>
-                  <th>
-                    <div className="buttons">
-                      <Link
-                        to={`/home/profile/${user.uuid}`}
-                        className="button is-small is-info"
-                      >
-                        Edit
-                      </Link>
-                      <button className="button is-small is-danger">
-                        Delete
-                      </button>
-                    </div>
+                  <th
+                    className={user.role === "admin" ? "has-text-warning" : ""}
+                  >
+                    {user.role}
                   </th>
                 </tr>
               );

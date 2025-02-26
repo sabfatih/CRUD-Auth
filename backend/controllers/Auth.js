@@ -12,11 +12,11 @@ export const logIn = async (req, res) => {
   });
 
   if (!user)
-    return res.status(404).json({ msg: "User not found or wrong password" });
+    return res.status(404).json({ msg: "Email not found or wrong password" });
 
   const match = await argon2.verify(user.password, req.body.password);
   if (!match)
-    return res.status(404).json({ msg: "User not found or wrong password" });
+    return res.status(404).json({ msg: "Email not found or wrong password" });
 
   req.session.userId = user.uuid;
 
@@ -61,6 +61,6 @@ export const logOut = (req, res) => {
   req.session.destroy((e) => {
     if (e) return res.status(400).json({ msg: "Can't logout" });
 
-    res.status(200).json({ msg: "You've been logout" });
+    res.status(200).json({ msg: "Log out success" });
   });
 };

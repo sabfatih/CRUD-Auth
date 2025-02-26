@@ -6,10 +6,13 @@ import { toast } from "react-toastify";
 import { logoutUser, resetAuth, resetGetMe } from "../features/authSlice";
 
 const Profile = () => {
+  const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { getMeUser } = useSelector((state) => state.getMe);
-  const { id } = useParams();
+
+  const adminIsChecking =
+    getMeUser && getMeUser.role === "admin" && getMeUser.uuid !== id;
 
   const [editMode, setEditMode] = useState(false);
   const [changePasswordMode, setChangePasswordMode] = useState(false);
@@ -34,11 +37,15 @@ const Profile = () => {
   };
   useEffect(() => {
     if (getMeUser) {
-      if (getMeUser.role !== "admin" && getMeUser.uuid !== id) {
+      if (
+        getMeUser.role === "admin" ||
+        getMeUser.role === "SUPERADMIN" ||
+        getMeUser.uuid !== id
+      ) {
+        getUserById();
+      } else {
         toast.error("Forbidden Access!");
         navigate("/home/dashboard");
-      } else {
-        getUserById();
       }
     }
   }, [getMeUser, dispatch, navigate, id]);
@@ -122,11 +129,27 @@ const Profile = () => {
       navigate("/login");
     } catch (e) {
       console.log(e);
+      toast.error(e.response.data.msg);
+    }
+  };
+
+  const [delAccPopUp, setDelAccPopUp] = useState(false);
+  const [deleteWaitTime, setDeleteWaitTime] = useState(5);
+  const deleteAccount = async () => {
+    try {
+      const response = await axios.delete(`http://localhost:5000/users/${id}`);
+      toast.success(response.data.msg);
+      setDelAccPopUp(false);
+      navigate(getMeUser.uuid == id ? "/login" : "/home/users");
+    } catch (e) {
+      console.log(e);
+      toast.error(e.response.data.msg);
     }
   };
 
   return (
     <>
+      {/* exit edit mode confirmation pop up */}
       <div className={`modal ${resetPopUp ? "is-active" : ""}`}>
         <div className="modal-background"></div>
         <div className="modal-card">
@@ -154,6 +177,7 @@ const Profile = () => {
         </div>
       </div>
 
+      {/* log out user confirmation pop up */}
       <div className={`modal ${LogoutPopUp ? "is-active" : ""}`}>
         <div className="modal-background"></div>
         <div className="modal-card">
@@ -178,13 +202,52 @@ const Profile = () => {
         </div>
       </div>
 
-      <h1 className="title">User profile</h1>
+      {/* delete account confirmation pop up */}
+      <div className={`modal ${delAccPopUp ? "is-active" : ""}`}>
+        <div className="modal-background"></div>
+        <div className="modal-card">
+          <header className="modal-card-head">
+            <p className="modal-card-title">
+              Are you sure to delete this account?
+            </p>
+            <button
+              onClick={() => setDelAccPopUp(false)}
+              className="delete"
+              aria-label="close"
+            ></button>
+          </header>
+          <footer className="modal-card-foot">
+            <div className="buttons">
+              <button onClick={() => setDelAccPopUp(false)} className="button">
+                No
+              </button>
+              <button
+                onClick={deleteAccount}
+                className="button is-danger"
+                disabled={deleteWaitTime > 0}
+              >
+                {deleteWaitTime < 1 ? "Yes" : deleteWaitTime}
+              </button>
+            </div>
+          </footer>
+        </div>
+      </div>
+
+      <h1 className="title">
+        User profile{" "}
+        {user && user.role === "SUPERADMIN" && (
+          <span className="is-size-5 has-text-danger mx-auto">
+            (SUPERADMIN)
+          </span>
+        )}
+      </h1>
       <form onSubmit={(e) => editUser(e)} className="mx-4">
+        {/* name */}
         <div className="field">
           <label className="label">Name</label>
           <div className="control">
             <input
-              readOnly={!editMode}
+              readOnly={!editMode || adminIsChecking}
               type="text"
               className={`${required[0] ? "is-danger" : ""} input`}
               name="name"
@@ -204,11 +267,12 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* email */}
         <div className="field">
           <label className="label">Email</label>
           <div className="control">
             <input
-              readOnly={!editMode}
+              readOnly={!editMode || adminIsChecking}
               type="text"
               className={`${required[1] ? "is-danger" : ""} input`}
               name="email"
@@ -228,6 +292,7 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* password */}
         {editMode && (
           <>
             <div hidden={!changePasswordMode}>
@@ -235,7 +300,7 @@ const Profile = () => {
                 <label className="label">Current Password</label>
                 <div className="control">
                   <input
-                    readOnly={!editMode}
+                    readOnly={!editMode || adminIsChecking}
                     type="text"
                     className={`${required[2] ? "is-danger" : ""} input`}
                     name="curPassword"
@@ -258,7 +323,7 @@ const Profile = () => {
                 <label className="label">New Password</label>
                 <div className="control">
                   <input
-                    readOnly={!editMode}
+                    readOnly={!editMode || adminIsChecking}
                     type="text"
                     className={`${required[3] ? "is-danger" : ""} input`}
                     name="newPassword"
@@ -281,7 +346,7 @@ const Profile = () => {
                 <label className="label">Confirm New Password</label>
                 <div className="control">
                   <input
-                    readOnly={!editMode}
+                    readOnly={!editMode || adminIsChecking}
                     type="text"
                     className={`${required[4] ? "is-danger" : ""} input`}
                     name="confNewPassword"
@@ -302,6 +367,7 @@ const Profile = () => {
               </div>
             </div>
 
+            {/* change password mode button */}
             <div className="field">
               <div className="label"> </div>
               <div className="buttons">
@@ -336,112 +402,105 @@ const Profile = () => {
           </>
         )}
 
-        <div className="field">
-          <label className="label">Role</label>
-          <div className="control">
-            <div className="select">
-              <select
-                name="role"
-                value={userRole}
-                disabled={!editMode}
-                onDoubleClick={() => {
-                  if (editMode) {
-                    if (getMeUser.role !== "admin") {
-                      toast.warning(
-                        "You can't change role unless you're admin"
-                      );
-                    } else {
-                      if (userRole === "admin") {
-                        toast.warning("You can't change admin's role");
-                      }
-                    }
-                  }
-                }}
-                onChange={(e) => {
-                  if (getMeUser.role === "admin") {
-                    if (userRole === "admin") {
-                      toast.warning("You can't change admin's role");
+        {/* role */}
+        {user && user.role !== "SUPERADMIN" && (
+          <div className="field">
+            <label className="label">Role</label>
+            <div className="control">
+              <div className="select">
+                <select
+                  name="role"
+                  value={userRole}
+                  disabled={!editMode}
+                  onChange={(e) => {
+                    if (
+                      editMode &&
+                      (getMeUser.role !== "SUPERADMIN" || getMeUser.uuid !== id)
+                    ) {
+                      toast.warning("Only special account can change role");
                     } else {
                       setUserRole(e.target.value);
                     }
-                  } else {
-                    e.preventDefault();
-                    toast.warning("You can't change role unless you're admin");
-                  }
-                }}
-              >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
+                  }}
+                >
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
             </div>
-
-            {/* <input
-              readOnly={true}
-              onDoubleClick={() =>
-                editMode &&
-                toast.warning(
-                  getMeUser.role === "admin"
-                    ? "You can't change admin's role"
-                    : "You can't change role unless you're admin"
-                )
-              }
-              type="text"
-              className="input"
-              value={userRole}
-              onChange={(e) => setUserRole(e.target.value)}
-              autoComplete="off"
-            /> */}
           </div>
-        </div>
+        )}
 
-        {/* edit button */}
-        <div className="buttons">
-          {editMode ? (
-            <>
-              <button
-                type="button"
-                onClick={() => {
-                  if (
-                    userName != user.name ||
-                    userEmail != user.email ||
-                    userNewPassword.length > 0 ||
-                    userConfNewPassword.length > 0
-                  ) {
-                    setResetPopUp(true);
-                  } else {
-                    setEditMode(false);
-                    setChangePasswordMode(false);
-                  }
-                }}
-                className="button is-grey"
-              >
-                Cancel
-              </button>
-              <button type="submit" className="button is-success">
-                Apply changes
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                type="button"
-                onClick={() => setEditMode(true)}
-                className="button is-primary"
-              >
-                Edit profile
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setLogoutPopUp(true);
-                }}
-                className="button is-danger"
-              >
-                Logout
-              </button>
-            </>
-          )}
-        </div>
+        {/* edit, apply changes, log out, and delete account button */}
+        {!adminIsChecking && (
+          <>
+            {editMode ? (
+              <div className="buttons">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (
+                      userName != user.name ||
+                      userEmail != user.email ||
+                      userNewPassword.length > 0 ||
+                      userConfNewPassword.length > 0
+                    ) {
+                      setResetPopUp(true);
+                    } else {
+                      setEditMode(false);
+                      setChangePasswordMode(false);
+                    }
+                  }}
+                  className="button is-grey"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="button is-success">
+                  Apply changes
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="buttons">
+                  <button
+                    type="button"
+                    onClick={() => setEditMode(true)}
+                    className="button is-primary"
+                  >
+                    Edit profile
+                  </button>
+                  {getMeUser.uuid == id && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLogoutPopUp(true);
+                      }}
+                      className="button is-danger"
+                    >
+                      Logout
+                    </button>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const timer = setInterval(() => {
+                      setDeleteWaitTime((prev) => prev - 1);
+                    }, 1000);
+                    if (deleteWaitTime == 0) {
+                      clearInterval(timer);
+                    }
+
+                    setDelAccPopUp(true);
+                  }}
+                  className="button is-danger"
+                >
+                  Delete account
+                </button>
+              </>
+            )}
+          </>
+        )}
       </form>
     </>
   );

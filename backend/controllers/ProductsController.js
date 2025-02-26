@@ -1,4 +1,4 @@
-import { Op, where } from "sequelize";
+import { Op } from "sequelize";
 import Product from "../models/ProductModel.js";
 import User from "../models/UserModel.js";
 
@@ -111,7 +111,7 @@ const updateProduct = async (req, res) => {
         { name, price },
         {
           where: {
-            [Op.and]: [{ uuid: req.params.id, userId: req.userId }],
+            [Op.and]: [{ uuid: req.params.id }, { userId: req.userId }],
           },
         }
       );

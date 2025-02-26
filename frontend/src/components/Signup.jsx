@@ -39,6 +39,7 @@ const Signup = () => {
 
   useEffect(() => {
     if (user || isSuccess) {
+      toast.dismiss();
       toast.success("Sign up successfully");
       navigate("/home/dashboard");
       dispatch(resetAuth());
@@ -75,6 +76,7 @@ const Signup = () => {
     }
 
     dispatch(createAndLoginUser({ name, email, password, confPassword, role }));
+    dispatch(resetAuth());
   };
 
   return (
@@ -94,14 +96,15 @@ const Signup = () => {
                       placeholder="Name"
                       name="name"
                       autoComplete="off"
-                      onChange={() =>
+                      onChange={() => {
                         setRequired((prev) => [
                           false,
                           prev[1],
                           prev[2],
                           prev[3],
-                        ])
-                      }
+                        ]);
+                        toast.dismiss();
+                      }}
                     />
                   </div>
                 </div>
@@ -114,14 +117,15 @@ const Signup = () => {
                       placeholder="Email"
                       name="email"
                       autoComplete="off"
-                      onChange={() =>
+                      onChange={() => {
                         setRequired((prev) => [
                           prev[0],
                           false,
                           prev[2],
                           prev[3],
-                        ])
-                      }
+                        ]);
+                        toast.dismiss();
+                      }}
                     />
                   </div>
                 </div>
@@ -134,14 +138,15 @@ const Signup = () => {
                       placeholder="Password"
                       name="password"
                       autoComplete="off"
-                      onChange={() =>
+                      onChange={() => {
                         setRequired((prev) => [
                           prev[0],
                           prev[1],
                           false,
                           prev[3],
-                        ])
-                      }
+                        ]);
+                        toast.dismiss();
+                      }}
                     />
                     <>
                       <input
@@ -167,14 +172,16 @@ const Signup = () => {
                       placeholder="Confirm password"
                       name="confPassword"
                       autoComplete="off"
-                      onChange={() =>
+                      onChange={() => {
                         setRequired((prev) => [
                           prev[0],
                           prev[1],
                           prev[2],
                           false,
-                        ])
-                      }
+                        ]);
+
+                        toast.dismiss();
+                      }}
                     />
                     <>
                       <input
@@ -212,7 +219,14 @@ const Signup = () => {
                 </div>
                 <p className="has-text-centered">
                   Already have an account?{" "}
-                  <Link to={"/login"} className="has-text-weight-bold">
+                  <Link
+                    to={"/login"}
+                    onClick={() => {
+                      toast.dismiss();
+                      dispatch(resetAuth());
+                    }}
+                    className="has-text-weight-bold"
+                  >
                     Login
                   </Link>
                 </p>

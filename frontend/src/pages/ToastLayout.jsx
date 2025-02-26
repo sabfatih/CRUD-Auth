@@ -9,6 +9,7 @@ const ToastLayout = () => {
       <Outlet />
       <ToastContainer
         stacked
+        // limit={10}
         position="top-right"
         autoClose={5000}
         hideProgressBar={false}

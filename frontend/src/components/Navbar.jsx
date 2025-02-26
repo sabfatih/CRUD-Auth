@@ -1,7 +1,8 @@
 import React from "react";
 import { NavLink, Link } from "react-router-dom";
 
-import adminLogo from "../public/customer-call.png";
+import adminLogo from "../public/admin.png";
+import superAdminLogo from "../public/superAdmin.png";
 import userLogo from "../public/user.png";
 
 const Navbar = ({ user }) => {
@@ -14,7 +15,13 @@ const Navbar = ({ user }) => {
       <div className="navbar-brand">
         <NavLink to={`/home/profile/${user.uuid}`} className="navbar-item">
           <img
-            src={user.role === "admin" ? adminLogo : userLogo}
+            src={
+              user.role === "SUPERADMIN"
+                ? superAdminLogo
+                : user.role === "admin"
+                ? adminLogo
+                : userLogo
+            }
             width="28"
             height="28"
           />

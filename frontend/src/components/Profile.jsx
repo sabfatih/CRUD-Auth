@@ -12,15 +12,18 @@ const Profile = () => {
   const { id } = useParams();
 
   const [editMode, setEditMode] = useState(false);
+  const [changePasswordMode, setChangePasswordMode] = useState(false);
   const [resetPopUp, setResetPopUp] = useState(false);
 
   const [user, setUser] = useState({});
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
-  const [userCurrentPassword, setUserCurrentPassword] = useState("");
+  const [userCurPassword, setUserCurPassword] = useState("");
   const [userNewPassword, setUserNewPassword] = useState("");
-  const [userConfirmNewPassword, setUserConfirmNewPassword] = useState("");
+  const [userConfNewPassword, setUserConfNewPassword] = useState("");
   const [userRole, setUserRole] = useState("");
+
+  const [required, setRequired] = useState([false, false, false, false, false]);
 
   const getUserById = async () => {
     const response = await axios.get(`http://localhost:5000/users/${id}`);
@@ -51,9 +54,29 @@ const Profile = () => {
 
   const editUser = async (e) => {
     e.preventDefault();
+    console.log(e);
     const name = e.target.name.value;
     const email = e.target.email.value;
     const role = e.target.role.value;
+    const curPassword = e.target.curPassword.value;
+    const newPassword = e.target.newPassword.value;
+    const confNewPassword = e.target.confNewPassword.value;
+
+    if (!name || !email) {
+      setRequired((prev) =>
+        required.map((item, i) => {
+          if (i == 0) return !name ? true : item;
+          if (i == 1) return !email ? true : item;
+          if (curPassword || newPassword || confNewPassword) {
+            if (i == 2) return !curPassword ? true : item;
+            if (i == 3) return !newPassword ? true : item;
+            if (i == 4) return !confNewPassword ? true : item;
+          }
+          return item;
+        })
+      );
+      return false;
+    }
 
     try {
       const updatedUser = await axios.patch(
@@ -145,7 +168,7 @@ const Profile = () => {
             <input
               readOnly={!editMode}
               type="text"
-              className="input"
+              className={`${required[0] ? "is-red" : ""} input`}
               name="name"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
@@ -160,7 +183,7 @@ const Profile = () => {
             <input
               readOnly={!editMode}
               type="text"
-              className="input"
+              className={`${required[1] ? "is-red" : ""} input`}
               name="email"
               value={userEmail}
               onChange={(e) => setUserEmail(e.target.value)}
@@ -168,6 +191,150 @@ const Profile = () => {
             />
           </div>
         </div>
+
+        <div hidden={editMode ? !changePasswordMode : true}>
+          <div className="field">
+            <label className="label">Current Password</label>
+            <div className="control">
+              <input
+                readOnly={!editMode}
+                type="text"
+                className={`${required[2] ? "is-red" : ""} input`}
+                name="curPassword"
+                value={userCurPassword}
+                onChange={(e) => setUserCurPassword(e.target.value)}
+                autoComplete="off"
+              />
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">New Password</label>
+            <div className="control">
+              <input
+                readOnly={!editMode}
+                type="text"
+                className={`${required[3] ? "is-red" : ""} input`}
+                name="newPassword"
+                value={userNewPassword}
+                onChange={(e) => setUserNewPassword(e.target.value)}
+                autoComplete="off"
+              />
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Confirm New Password</label>
+            <div className="control">
+              <input
+                readOnly={!editMode}
+                type="text"
+                className={`${required[4] ? "is-red" : ""} input`}
+                name="confNewPassword"
+                value={userConfNewPassword}
+                onChange={(e) => setUserConfNewPassword(e.target.value)}
+                autoComplete="off"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="field">
+          <div className="label">
+            <div className="buttons">
+              {changePasswordMode ? (
+                <button
+                  type="button"
+                  onClick={() => setChangePasswordMode(false)}
+                  className="button is-small is-right"
+                >
+                  Cancel
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setChangePasswordMode(true)}
+                  className="button is-small is-right"
+                >
+                  Change password
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* {editMode && (
+          <>
+            {changePasswordMode && (
+              <>
+                <div className="field">
+                  <label className="label">Current Password</label>
+                  <div className="control">
+                    <input
+                      readOnly={!editMode}
+                      type="text"
+                      className={`${required[2] ? "is-red" : ""} input`}
+                      name="curPassword"
+                      value={userCurPassword}
+                      onChange={(e) => setUserCurPassword(e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
+                <div className="field">
+                  <label className="label">New Password</label>
+                  <div className="control">
+                    <input
+                      readOnly={!editMode}
+                      type="text"
+                      className={`${required[3] ? "is-red" : ""} input`}
+                      name="newPassword"
+                      value={userNewPassword}
+                      onChange={(e) => setUserNewPassword(e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
+                <div className="field">
+                  <label className="label">Confirm New Password</label>
+                  <div className="control">
+                    <input
+                      readOnly={!editMode}
+                      type="text"
+                      className={`${required[4] ? "is-red" : ""} input`}
+                      name="confNewPassword"
+                      value={userConfNewPassword}
+                      onChange={(e) => setUserConfNewPassword(e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div className="field">
+              <div className="label">
+                <div className="buttons">
+                  {changePasswordMode ? (
+                    <button
+                      type="button"
+                      onClick={() => setChangePasswordMode(false)}
+                      className="button is-small is-right"
+                    >
+                      Cancel
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setChangePasswordMode(true)}
+                      className="button is-small is-right"
+                    >
+                      Change password
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
+        )} */}
 
         <div className="field">
           <label className="label">Role</label>
@@ -227,9 +394,9 @@ const Profile = () => {
           </div>
         </div>
 
-        {editMode ? (
-          <div className="is-flex is-justify-content-space-between">
-            <div className="buttons">
+        <div className="buttons">
+          {editMode ? (
+            <>
               <button
                 type="button"
                 onClick={() => {
@@ -246,31 +413,28 @@ const Profile = () => {
               <button type="submit" className="button is-success">
                 Apply changes
               </button>
-            </div>
-            <Link to={"/"} className="is-right">
-              Change password
-            </Link>
-          </div>
-        ) : (
-          <div className="buttons is-flex is-justify-content-space-between">
-            <button
-              type="button"
-              onClick={() => setEditMode(true)}
-              className="button is-primary"
-            >
-              Edit profile
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setLogoutPopUp(true);
-              }}
-              className="button is-danger"
-            >
-              Logout
-            </button>
-          </div>
-        )}
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => setEditMode(true)}
+                className="button is-primary"
+              >
+                Edit profile
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setLogoutPopUp(true);
+                }}
+                className="button is-danger"
+              >
+                Logout
+              </button>
+            </>
+          )}
+        </div>
       </form>
     </>
   );

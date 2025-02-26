@@ -90,9 +90,7 @@ const Signup = () => {
                   <div className="control">
                     <input
                       type="text"
-                      className={`input ${
-                        required[0] ? "is-danger is-outlined" : ""
-                      }`}
+                      className={`input ${required[0] ? "is-danger" : ""}`}
                       placeholder="Name"
                       name="name"
                       autoComplete="off"
@@ -112,9 +110,7 @@ const Signup = () => {
                   <div className="control">
                     <input
                       type="text"
-                      className={`input ${
-                        required[1] ? "is-danger is-outlined" : ""
-                      }`}
+                      className={`input ${required[1] ? "is-danger" : ""}`}
                       placeholder="Email"
                       name="email"
                       autoComplete="off"
@@ -134,9 +130,7 @@ const Signup = () => {
                   <div className="control">
                     <input
                       type={`${showPassword ? "text" : "password"}`}
-                      className={`input ${
-                        required[2] ? "is-danger is-outlined" : ""
-                      }`}
+                      className={`input ${required[2] ? "is-danger" : ""}`}
                       placeholder="Password"
                       name="password"
                       autoComplete="off"
@@ -169,9 +163,7 @@ const Signup = () => {
                   <div className="control">
                     <input
                       type={`${showConfPassword ? "text" : "password"}`}
-                      className={`input ${
-                        required[3] ? "is-danger is-outlined" : ""
-                      }`}
+                      className={`input ${required[3] ? "is-danger" : ""}`}
                       placeholder="Confirm password"
                       name="confPassword"
                       autoComplete="off"

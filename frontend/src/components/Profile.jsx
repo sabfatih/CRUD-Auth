@@ -38,40 +38,38 @@ const Profile = () => {
         toast.error("Forbidden Access!");
         navigate("/home/dashboard");
       } else {
-        console.log("tes");
         getUserById();
       }
     }
   }, [getMeUser, dispatch, navigate, id]);
 
-  const resetUser = () => {
-    setUserName(user.name);
-    setUserEmail(user.email);
-    setUserRole(user.role);
-    setEditMode(false);
-    setResetPopUp(false);
-  };
-
   const editUser = async (e) => {
     e.preventDefault();
-    console.log(e);
-    const name = e.target.name.value;
-    const email = e.target.email.value;
-    const role = e.target.role.value;
-    const curPassword = e.target.curPassword.value;
-    const newPassword = e.target.newPassword.value;
-    const confNewPassword = e.target.confNewPassword.value;
 
-    if (!name || !email) {
+    if (
+      userName == user.name &&
+      userEmail == user.email &&
+      !userNewPassword &&
+      !userConfNewPassword
+    ) {
+      setEditMode(false);
+      setChangePasswordMode(false);
+      return false;
+    }
+
+    if (
+      !userName ||
+      !userName ||
+      (userNewPassword && !userConfNewPassword) ||
+      (!userNewPassword && userConfNewPassword)
+    ) {
       setRequired((prev) =>
-        required.map((item, i) => {
-          if (i == 0) return !name ? true : item;
-          if (i == 1) return !email ? true : item;
-          if (curPassword || newPassword || confNewPassword) {
-            if (i == 2) return !curPassword ? true : item;
-            if (i == 3) return !newPassword ? true : item;
-            if (i == 4) return !confNewPassword ? true : item;
-          }
+        prev.map((item, i) => {
+          if (i == 0) return !userName ? true : item;
+          if (i == 1) return !userName ? true : item;
+          if (i == 2) return !userCurPassword ? true : item;
+          if (i == 3) return !userNewPassword ? true : item;
+          if (i == 4) return !userConfNewPassword ? true : item;
           return item;
         })
       );
@@ -81,16 +79,36 @@ const Profile = () => {
     try {
       const updatedUser = await axios.patch(
         `http://localhost:5000/users/${id}`,
-        { name, email, role }
+        {
+          name: userName,
+          email: userEmail,
+          role: userRole,
+          curPassword: userCurPassword,
+          newPassword: userNewPassword,
+          confNewPassword: userConfNewPassword,
+        }
       );
 
       toast.success(updatedUser.data.msg);
       getUserById();
       setEditMode(false);
+      setChangePasswordMode(false);
+      setUserCurPassword("");
+      setUserNewPassword("");
+      setUserConfNewPassword("");
+      setRequired([false, false, false, false]);
     } catch (e) {
       console.log(e);
       toast.error(e.response.data.msg);
     }
+  };
+
+  const resetUser = () => {
+    setUserName(user.name);
+    setUserEmail(user.email);
+    setUserRole(user.role);
+    setEditMode(false);
+    setResetPopUp(false);
   };
 
   const [LogoutPopUp, setLogoutPopUp] = useState(false);
@@ -168,10 +186,19 @@ const Profile = () => {
             <input
               readOnly={!editMode}
               type="text"
-              className={`${required[0] ? "is-red" : ""} input`}
+              className={`${required[0] ? "is-danger" : ""} input`}
               name="name"
               value={userName}
-              onChange={(e) => setUserName(e.target.value)}
+              onChange={(e) => {
+                setUserName(e.target.value);
+                setRequired((prev) => [
+                  false,
+                  prev[1],
+                  prev[2],
+                  prev[3],
+                  prev[4],
+                ]);
+              }}
               autoComplete="off"
             />
           </div>
@@ -183,158 +210,131 @@ const Profile = () => {
             <input
               readOnly={!editMode}
               type="text"
-              className={`${required[1] ? "is-red" : ""} input`}
+              className={`${required[1] ? "is-danger" : ""} input`}
               name="email"
               value={userEmail}
-              onChange={(e) => setUserEmail(e.target.value)}
+              onChange={(e) => {
+                setUserEmail(e.target.value);
+                setRequired((prev) => [
+                  prev[0],
+                  false,
+                  prev[2],
+                  prev[3],
+                  prev[4],
+                ]);
+              }}
               autoComplete="off"
             />
           </div>
         </div>
 
-        <div hidden={editMode ? !changePasswordMode : true}>
-          <div className="field">
-            <label className="label">Current Password</label>
-            <div className="control">
-              <input
-                readOnly={!editMode}
-                type="text"
-                className={`${required[2] ? "is-red" : ""} input`}
-                name="curPassword"
-                value={userCurPassword}
-                onChange={(e) => setUserCurPassword(e.target.value)}
-                autoComplete="off"
-              />
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">New Password</label>
-            <div className="control">
-              <input
-                readOnly={!editMode}
-                type="text"
-                className={`${required[3] ? "is-red" : ""} input`}
-                name="newPassword"
-                value={userNewPassword}
-                onChange={(e) => setUserNewPassword(e.target.value)}
-                autoComplete="off"
-              />
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Confirm New Password</label>
-            <div className="control">
-              <input
-                readOnly={!editMode}
-                type="text"
-                className={`${required[4] ? "is-red" : ""} input`}
-                name="confNewPassword"
-                value={userConfNewPassword}
-                onChange={(e) => setUserConfNewPassword(e.target.value)}
-                autoComplete="off"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="field">
-          <div className="label">
-            <div className="buttons">
-              {changePasswordMode ? (
-                <button
-                  type="button"
-                  onClick={() => setChangePasswordMode(false)}
-                  className="button is-small is-right"
-                >
-                  Cancel
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setChangePasswordMode(true)}
-                  className="button is-small is-right"
-                >
-                  Change password
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* {editMode && (
+        {editMode && (
           <>
-            {changePasswordMode && (
-              <>
-                <div className="field">
-                  <label className="label">Current Password</label>
-                  <div className="control">
-                    <input
-                      readOnly={!editMode}
-                      type="text"
-                      className={`${required[2] ? "is-red" : ""} input`}
-                      name="curPassword"
-                      value={userCurPassword}
-                      onChange={(e) => setUserCurPassword(e.target.value)}
-                      autoComplete="off"
-                    />
-                  </div>
+            <div hidden={!changePasswordMode}>
+              <div className="field">
+                <label className="label">Current Password</label>
+                <div className="control">
+                  <input
+                    readOnly={!editMode}
+                    type="text"
+                    className={`${required[2] ? "is-danger" : ""} input`}
+                    name="curPassword"
+                    value={userCurPassword}
+                    onChange={(e) => {
+                      setUserCurPassword(e.target.value);
+                      setRequired((prev) => [
+                        prev[0],
+                        prev[1],
+                        false,
+                        prev[3],
+                        prev[4],
+                      ]);
+                    }}
+                    autoComplete="off"
+                  />
                 </div>
-                <div className="field">
-                  <label className="label">New Password</label>
-                  <div className="control">
-                    <input
-                      readOnly={!editMode}
-                      type="text"
-                      className={`${required[3] ? "is-red" : ""} input`}
-                      name="newPassword"
-                      value={userNewPassword}
-                      onChange={(e) => setUserNewPassword(e.target.value)}
-                      autoComplete="off"
-                    />
-                  </div>
+              </div>
+              <div className="field">
+                <label className="label">New Password</label>
+                <div className="control">
+                  <input
+                    readOnly={!editMode}
+                    type="text"
+                    className={`${required[3] ? "is-danger" : ""} input`}
+                    name="newPassword"
+                    value={userNewPassword}
+                    onChange={(e) => {
+                      setUserNewPassword(e.target.value);
+                      setRequired((prev) => [
+                        prev[0],
+                        prev[1],
+                        prev[2],
+                        false,
+                        prev[4],
+                      ]);
+                    }}
+                    autoComplete="off"
+                  />
                 </div>
-                <div className="field">
-                  <label className="label">Confirm New Password</label>
-                  <div className="control">
-                    <input
-                      readOnly={!editMode}
-                      type="text"
-                      className={`${required[4] ? "is-red" : ""} input`}
-                      name="confNewPassword"
-                      value={userConfNewPassword}
-                      onChange={(e) => setUserConfNewPassword(e.target.value)}
-                      autoComplete="off"
-                    />
-                  </div>
-                </div>
-              </>
-            )}
-
-            <div className="field">
-              <div className="label">
-                <div className="buttons">
-                  {changePasswordMode ? (
-                    <button
-                      type="button"
-                      onClick={() => setChangePasswordMode(false)}
-                      className="button is-small is-right"
-                    >
-                      Cancel
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setChangePasswordMode(true)}
-                      className="button is-small is-right"
-                    >
-                      Change password
-                    </button>
-                  )}
+              </div>
+              <div className="field">
+                <label className="label">Confirm New Password</label>
+                <div className="control">
+                  <input
+                    readOnly={!editMode}
+                    type="text"
+                    className={`${required[4] ? "is-danger" : ""} input`}
+                    name="confNewPassword"
+                    value={userConfNewPassword}
+                    onChange={(e) => {
+                      setUserConfNewPassword(e.target.value);
+                      setRequired((prev) => [
+                        prev[0],
+                        prev[1],
+                        prev[2],
+                        prev[3],
+                        false,
+                      ]);
+                    }}
+                    autoComplete="off"
+                  />
                 </div>
               </div>
             </div>
+
+            <div className="field">
+              <div className="label"> </div>
+              <div className="buttons">
+                {changePasswordMode ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setChangePasswordMode(false);
+                      setRequired((prev) => [
+                        prev[0],
+                        prev[1],
+                        false,
+                        false,
+                        false,
+                      ]);
+                    }}
+                    className="button is-small is-right"
+                  >
+                    Cancel
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setChangePasswordMode(true)}
+                    className="button is-small is-right"
+                  >
+                    Change password
+                  </button>
+                )}
+              </div>
+            </div>
           </>
-        )} */}
+        )}
 
         <div className="field">
           <label className="label">Role</label>
@@ -394,16 +394,23 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* edit button */}
         <div className="buttons">
           {editMode ? (
             <>
               <button
                 type="button"
                 onClick={() => {
-                  if (userName != user.name || userEmail != user.email) {
+                  if (
+                    userName != user.name ||
+                    userEmail != user.email ||
+                    userNewPassword.length > 0 ||
+                    userConfNewPassword.length > 0
+                  ) {
                     setResetPopUp(true);
                   } else {
                     setEditMode(false);
+                    setChangePasswordMode(false);
                   }
                 }}
                 className="button is-grey"

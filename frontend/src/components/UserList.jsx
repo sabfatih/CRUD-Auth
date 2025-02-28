@@ -29,7 +29,7 @@ const UserList = () => {
   return (
     getMeUser &&
     (getMeUser.role === "SUPERADMIN" || getMeUser.role === "admin") && (
-      <>
+      <div className="mx-4">
         <h1 className="title">Users</h1>
         <h2 className="subtitle">List of users</h2>
         <table className="table is-striped is-fullwidth">
@@ -62,7 +62,7 @@ const UserList = () => {
             })}
           </tbody>
         </table>
-      </>
+      </div>
     )
   );
 };

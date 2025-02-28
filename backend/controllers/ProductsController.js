@@ -5,7 +5,7 @@ import User from "../models/UserModel.js";
 const getProducts = async (req, res) => {
   try {
     let response;
-    if (req.role === "admin") {
+    if (req.role === ("SUPERADMIN" || "admin")) {
       response = await Product.findAll({
         attributes: ["uuid", "name", "price", "createdAt"],
         include: [
@@ -38,7 +38,7 @@ const getProducts = async (req, res) => {
 const getProductById = async (req, res) => {
   try {
     let response;
-    if (req.role === "admin") {
+    if (req.role === ("SUPERADMIN" || "admin")) {
       response = await Product.findOne({
         attributes: ["uuid", "name", "price", "createdBy"],
         include: [

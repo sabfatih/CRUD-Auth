@@ -1,11 +1,14 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ProductList = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
 
   const getAllProducts = async () => {
     const response = await axios.get("http://localhost:5000/products");
+    console.log(" getAllProducts ~ response", response);
     setProducts(response.data);
   };
 
@@ -35,26 +38,21 @@ const ProductList = () => {
             <th>Price</th>
             <th>Created by</th>
             <th>Created at</th>
-            <th>Action</th>
           </tr>
         </thead>
         <tbody>
           {products.map((product, i) => {
             return (
-              <tr key={i}>
+              <tr
+                key={i}
+                className="is-clickable"
+                onClick={() => navigate(`/home/product/${product.uuid}`)}
+              >
                 <th>{i + 1}</th>
                 <th>{product.name}</th>
                 <th>{product.price}</th>
                 <th>{product.user.name}</th>
                 <th>{dateFormat(product.createdAt)}</th>
-                <th>
-                  <div className="buttons">
-                    <button className="button is-small is-info">Edit</button>
-                    <button className="button is-small is-danger">
-                      Delete
-                    </button>
-                  </div>
-                </th>
               </tr>
             );
           })}

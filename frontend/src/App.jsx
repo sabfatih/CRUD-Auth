@@ -22,10 +22,7 @@ function App() {
             <Route path="/home/users" element={<UserList />} />
             <Route path="/home/products" element={<ProductList />} />
             <Route path="/home/products/add" element={<FormAddProduct />} />
-            <Route
-              path="/home/products/edit/:id"
-              element={<FormEditProduct />}
-            />
+            <Route path="/home/product/:id" element={<FormEditProduct />} />
             <Route path="/home/profile/:id" element={<Profile />} />
           </Route>
         </Route>

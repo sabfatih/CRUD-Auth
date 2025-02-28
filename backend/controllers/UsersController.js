@@ -5,7 +5,7 @@ import argon2 from "argon2";
 const getUsers = async (req, res) => {
   try {
     let response;
-    if (req.role === "SUPERADMIN" || req.role === "admin") {
+    if (req.role === ("SUPERADMIN" || "admin")) {
       response = await User.findAll({
         where: {
           role: { [Op.not]: "SUPERADMIN" },
@@ -38,9 +38,7 @@ const getUserById = async (req, res) => {
           {
             uuid: req.params.id,
           },
-          req.role === "SUPERADMIN" || req.role === "admin"
-            ? {}
-            : { id: req.userId },
+          req.role === ("SUPERADMIN" || "admin") ? {} : { id: req.userId },
         ],
       },
 

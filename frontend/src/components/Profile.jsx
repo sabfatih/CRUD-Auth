@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { logoutUser, resetAuth, resetGetMe } from "../features/authSlice";
+import { IoArrowBack } from "react-icons/io5";
 
 const Profile = () => {
   const { id } = useParams();
@@ -234,6 +235,11 @@ const Profile = () => {
       </div>
 
       <h1 className="title">
+        {getMeUser.uuid != id && (
+          <Link to={"/home/users"} className="has-text-current">
+            <IoArrowBack className="is-clickable" />
+          </Link>
+        )}
         User profile{" "}
         {user && user.role === "SUPERADMIN" && (
           <span className="is-size-5 has-text-danger mx-auto">
@@ -243,128 +249,63 @@ const Profile = () => {
       </h1>
       <form onSubmit={(e) => editUser(e)} className="mx-4">
         {/* name */}
-        <div className="field">
-          <label className="label">Name</label>
-          <div className="control">
-            <input
-              readOnly={!editMode || adminIsChecking}
-              type="text"
-              className={`${required[0] ? "is-danger" : ""} input`}
-              name="name"
-              value={userName}
-              onChange={(e) => {
-                setUserName(e.target.value);
-                setRequired((prev) => [
-                  false,
-                  prev[1],
-                  prev[2],
-                  prev[3],
-                  prev[4],
-                ]);
-              }}
-              autoComplete="off"
-            />
-          </div>
-        </div>
+        <FormInput
+          label={"Name"}
+          editMode={editMode}
+          adminIsChecking={adminIsChecking}
+          required={required}
+          requiredIndex={0}
+          setRequired={setRequired}
+          userData={userName}
+          setUserData={setUserName}
+        />
 
         {/* email */}
-        <div className="field">
-          <label className="label">Email</label>
-          <div className="control">
-            <input
-              readOnly={!editMode || adminIsChecking}
-              type="text"
-              className={`${required[1] ? "is-danger" : ""} input`}
-              name="email"
-              value={userEmail}
-              onChange={(e) => {
-                setUserEmail(e.target.value);
-                setRequired((prev) => [
-                  prev[0],
-                  false,
-                  prev[2],
-                  prev[3],
-                  prev[4],
-                ]);
-              }}
-              autoComplete="off"
-            />
-          </div>
-        </div>
+        <FormInput
+          label={"Email"}
+          editMode={editMode}
+          adminIsChecking={adminIsChecking}
+          required={required}
+          requiredIndex={1}
+          setRequired={setRequired}
+          userData={userEmail}
+          setUserData={setUserEmail}
+        />
 
         {/* password */}
         {editMode && (
           <>
             <div hidden={!changePasswordMode}>
-              <div className="field">
-                <label className="label">Current Password</label>
-                <div className="control">
-                  <input
-                    readOnly={!editMode || adminIsChecking}
-                    type="text"
-                    className={`${required[2] ? "is-danger" : ""} input`}
-                    name="curPassword"
-                    value={userCurPassword}
-                    onChange={(e) => {
-                      setUserCurPassword(e.target.value);
-                      setRequired((prev) => [
-                        prev[0],
-                        prev[1],
-                        false,
-                        prev[3],
-                        prev[4],
-                      ]);
-                    }}
-                    autoComplete="off"
-                  />
-                </div>
-              </div>
-              <div className="field">
-                <label className="label">New Password</label>
-                <div className="control">
-                  <input
-                    readOnly={!editMode || adminIsChecking}
-                    type="text"
-                    className={`${required[3] ? "is-danger" : ""} input`}
-                    name="newPassword"
-                    value={userNewPassword}
-                    onChange={(e) => {
-                      setUserNewPassword(e.target.value);
-                      setRequired((prev) => [
-                        prev[0],
-                        prev[1],
-                        prev[2],
-                        false,
-                        prev[4],
-                      ]);
-                    }}
-                    autoComplete="off"
-                  />
-                </div>
-              </div>
-              <div className="field">
-                <label className="label">Confirm New Password</label>
-                <div className="control">
-                  <input
-                    readOnly={!editMode || adminIsChecking}
-                    type="text"
-                    className={`${required[4] ? "is-danger" : ""} input`}
-                    name="confNewPassword"
-                    value={userConfNewPassword}
-                    onChange={(e) => {
-                      setUserConfNewPassword(e.target.value);
-                      setRequired((prev) => [
-                        prev[0],
-                        prev[1],
-                        prev[2],
-                        prev[3],
-                        false,
-                      ]);
-                    }}
-                    autoComplete="off"
-                  />
-                </div>
-              </div>
+              <FormInput
+                label={"Current Password"}
+                editMode={editMode}
+                adminIsChecking={adminIsChecking}
+                required={required}
+                requiredIndex={2}
+                setRequired={setRequired}
+                userData={userCurPassword}
+                setUserData={setUserCurPassword}
+              />
+              <FormInput
+                label={"New Password"}
+                editMode={editMode}
+                adminIsChecking={adminIsChecking}
+                required={required}
+                requiredIndex={3}
+                setRequired={setRequired}
+                userData={userNewPassword}
+                setUserData={setUserNewPassword}
+              />
+              <FormInput
+                label={"Confirm New Password"}
+                editMode={editMode}
+                adminIsChecking={adminIsChecking}
+                required={required}
+                requiredIndex={4}
+                setRequired={setRequired}
+                userData={userConfNewPassword}
+                setUserData={setUserConfNewPassword}
+              />
             </div>
 
             {/* change password mode button */}
@@ -503,6 +444,45 @@ const Profile = () => {
         )}
       </form>
     </>
+  );
+};
+
+const FormInput = ({
+  label,
+  editMode,
+  adminIsChecking,
+  required,
+  requiredIndex,
+  setRequired,
+  userData,
+  setUserData,
+}) => {
+  return (
+    <div className="field">
+      <label className="label">{label}</label>
+      <div className="control">
+        <input
+          readOnly={!editMode || adminIsChecking}
+          type="text"
+          className={`${required[3] ? "is-danger" : ""} input`}
+          name="newPassword"
+          value={userData}
+          onChange={(e) => {
+            setUserData(e.target.value);
+            setRequired((prev) =>
+              prev.map((item, i) => {
+                if (i == 0) return requiredIndex == 0 ? false : item;
+                if (i == 1) return requiredIndex == 1 ? false : item;
+                if (i == 2) return requiredIndex == 2 ? false : item;
+                if (i == 3) return requiredIndex == 3 ? false : item;
+                if (i == 4) return requiredIndex == 4 ? false : item;
+              })
+            );
+          }}
+          autoComplete="off"
+        />
+      </div>
+    </div>
   );
 };
 

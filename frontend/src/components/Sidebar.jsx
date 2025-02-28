@@ -11,7 +11,7 @@ import {
 
 const Sidebar = ({ userRole }) => {
   return (
-    <div>
+    <div className="column is-2">
       <aside className="menu pl-2 has-shadow">
         <p className="menu-label">General</p>
         <ul className="menu-list">
